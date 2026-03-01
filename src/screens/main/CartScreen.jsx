@@ -217,8 +217,8 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.medium
   },
   headerTitle: {
-    fontSize: 34,
-    lineHeight: 38,
+    fontSize: 28,
+    lineHeight: 32,
     fontFamily: FONTS.bold,
     color: COLORS.text.primary
   },
@@ -300,14 +300,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   itemDesc: {
-    fontSize: FONTS.sizes.small,
-    lineHeight: 17,
+    fontSize: 12,
+    lineHeight: 15,
     fontFamily: FONTS.regular,
     color: COLORS.text.primary
   },
   itemVariant: {
     marginTop: 3,
-    fontSize: FONTS.sizes.medium,
+    fontSize: FONTS.sizes.small,
     fontFamily: FONTS.medium,
     color: COLORS.text.primary
   },
@@ -318,8 +318,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   itemPrice: {
-    fontSize: 28,
-    lineHeight: 30,
+    fontSize: 23,
+    lineHeight: 25,
     fontFamily: FONTS.bold,
     color: COLORS.text.primary
   },
@@ -355,8 +355,8 @@ const styles = StyleSheet.create({
     marginTop: SIZES.small
   },
   wishlistTitle: {
-    fontSize: 30,
-    lineHeight: 34,
+    fontSize: 24,
+    lineHeight: 28,
     fontFamily: FONTS.bold,
     color: COLORS.text.primary,
     marginBottom: SIZES.small
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
     marginRight: SIZES.small
   },
   optionChipText: {
-    fontSize: FONTS.sizes.large,
+    fontSize: FONTS.sizes.medium,
     fontFamily: FONTS.medium,
     color: COLORS.text.primary
   },
@@ -437,8 +437,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.medium
   },
   totalText: {
-    fontSize: 30,
-    lineHeight: 34,
+    fontSize: 24,
+    lineHeight: 28,
     fontFamily: FONTS.bold,
     color: COLORS.text.primary
   },
