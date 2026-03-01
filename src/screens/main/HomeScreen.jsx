@@ -820,8 +820,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.small
   },
   mostPopularPrice: {
-    fontSize: 44,
-    lineHeight: 46,
+    fontSize: FONTS.sizes.xxxlarge,
+    lineHeight: 28,
     fontFamily: FONTS.bold,
     color: COLORS.text.primary
   },
