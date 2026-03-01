@@ -15,6 +15,8 @@ export const useCart = () => {
     calculateCartSummary();
   }, [cartItems]);
 
+  const normalizeVariant = (value) => (value == null || value === '' ? null : value);
+
   const loadCart = async () => {
     setLoading(true);
     const items = await StorageService.getCart();
@@ -31,18 +33,21 @@ export const useCart = () => {
   };
 
   const addToCart = async (product, quantity = 1, selectedSize = null, selectedColor = null) => {
+    const normalizedSize = normalizeVariant(selectedSize);
+    const normalizedColor = normalizeVariant(selectedColor);
+
     const cartItem = {
       ...product,
       quantity,
-      selectedSize,
-      selectedColor,
+      selectedSize: normalizedSize,
+      selectedColor: normalizedColor,
       addedAt: new Date().toISOString()
     };
 
     const existingIndex = cartItems.findIndex(
-      item => item.id === product.id && 
-      item.selectedSize === selectedSize && 
-      item.selectedColor === selectedColor
+      item => item.id === product.id &&
+      normalizeVariant(item.selectedSize) === normalizedSize &&
+      normalizeVariant(item.selectedColor) === normalizedColor
     );
 
     let newCart;
@@ -59,10 +64,13 @@ export const useCart = () => {
   };
 
   const updateQuantity = async (itemId, newQuantity, size, color) => {
+    const normalizedSize = normalizeVariant(size);
+    const normalizedColor = normalizeVariant(color);
+
     const index = cartItems.findIndex(
-      item => item.id === itemId && 
-      item.selectedSize === size && 
-      item.selectedColor === color
+      item => item.id === itemId &&
+      normalizeVariant(item.selectedSize) === normalizedSize &&
+      normalizeVariant(item.selectedColor) === normalizedColor
     );
     
     if (index >= 0 && newQuantity > 0) {
@@ -74,10 +82,15 @@ export const useCart = () => {
   };
 
   const removeFromCart = async (itemId, size, color) => {
+    const normalizedSize = normalizeVariant(size);
+    const normalizedColor = normalizeVariant(color);
+
     const newCart = cartItems.filter(
-      item => !(item.id === itemId && 
-      item.selectedSize === size && 
-      item.selectedColor === color)
+      item => !(
+        item.id === itemId &&
+        normalizeVariant(item.selectedSize) === normalizedSize &&
+        normalizeVariant(item.selectedColor) === normalizedColor
+      )
     );
     setCartItems(newCart);
     await StorageService.saveCart(newCart);

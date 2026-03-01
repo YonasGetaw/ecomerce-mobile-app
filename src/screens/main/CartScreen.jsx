@@ -18,7 +18,7 @@ import { useFavoritesContext } from '../../Context/FavoritesContext';
 
 export default function CartScreen({ navigation }) {
   const { cartItems, updateQuantity, removeFromCart, addToCart } = useCartContext();
-  const { favorites } = useFavoritesContext();
+  const { favorites, removeFromFavorites } = useFavoritesContext();
 
   const total = useMemo(
     () => cartItems.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 1), 0),
@@ -52,6 +52,10 @@ export default function CartScreen({ navigation }) {
 
   const handleAddWishlistToCart = async (item) => {
     await addToCart(item, 1, item.selectedSize ?? 'M', item.selectedColor ?? 'Pink');
+  };
+
+  const handleRemoveFromWishlist = async (itemId) => {
+    await removeFromFavorites(itemId);
   };
 
   if (cartItems.length === 0) {
@@ -96,12 +100,14 @@ export default function CartScreen({ navigation }) {
 
         {cartItems.map((item) => (
           <View key={`${item.id}-${item.selectedSize || 'M'}-${item.selectedColor || 'Pink'}`} style={styles.cartItemRow}>
-            <TouchableOpacity
-              style={styles.imageWrap}
-              onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}
-              activeOpacity={0.85}
-            >
-              <Image source={{ uri: item.image }} style={styles.itemImage} />
+            <View style={styles.imageWrap}>
+              <TouchableOpacity
+                style={styles.imageTapArea}
+                onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}
+                activeOpacity={0.85}
+              >
+                <Image source={{ uri: item.image }} style={styles.itemImage} />
+              </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.deleteCircle}
@@ -109,7 +115,7 @@ export default function CartScreen({ navigation }) {
               >
                 <Icon name="trash-2" size={14} color={COLORS.error} />
               </TouchableOpacity>
-            </TouchableOpacity>
+            </View>
 
             <View style={styles.itemInfoWrap}>
               <Text style={styles.itemDesc} numberOfLines={2}>{item.description || 'Lorem ipsum dolor sit amet consectetur.'}</Text>
@@ -148,18 +154,20 @@ export default function CartScreen({ navigation }) {
 
             {wishlistItems.map((item) => (
               <View key={`wish-${item.id}`} style={styles.wishlistRow}>
-                <TouchableOpacity
-                  style={styles.wishlistImageWrap}
-                  onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}
-                >
-                  <Image source={{ uri: item.image }} style={styles.wishlistImage} />
+                <View style={styles.wishlistImageWrap}>
+                  <TouchableOpacity
+                    style={styles.imageTapArea}
+                    onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}
+                  >
+                    <Image source={{ uri: item.image }} style={styles.wishlistImage} />
+                  </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.deleteCircle}
-                    onPress={() => handleRemoveFromCart(item)}
+                    onPress={() => handleRemoveFromWishlist(item.id)}
                   >
                     <Icon name="trash-2" size={14} color={COLORS.error} />
                   </TouchableOpacity>
-                </TouchableOpacity>
+                </View>
 
                 <View style={styles.wishlistInfoWrap}>
                   <Text numberOfLines={2} style={styles.itemDesc}>{item.description || 'Lorem ipsum dolor sit amet consectetur.'}</Text>
@@ -279,6 +287,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginRight: SIZES.small,
     position: 'relative'
+  },
+  imageTapArea: {
+    width: '100%',
+    height: '100%'
   },
   itemImage: {
     width: '100%',
