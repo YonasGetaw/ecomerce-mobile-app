@@ -10,7 +10,6 @@ import {
   StatusBar
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import PrimaryButton from '../../components/buttons/PrimaryButton';
 import { COLORS, FONTS, SIZES } from '../../utils/colors';
 import { useCartContext } from '../../Context/CartContext';
 import { useFavoritesContext } from '../../Context/FavoritesContext';
@@ -18,6 +17,7 @@ import { useFavoritesContext } from '../../Context/FavoritesContext';
 export default function CartScreen({ navigation }) {
   const { cartItems, updateQuantity, removeFromCart, addToCart } = useCartContext();
   const { favorites, removeFromFavorites } = useFavoritesContext();
+  const isCartEmpty = cartItems.length === 0;
 
   const total = useMemo(
     () => cartItems.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 1), 0),
@@ -48,26 +48,6 @@ export default function CartScreen({ navigation }) {
     await removeFromFavorites(itemId);
   };
 
-  if (cartItems.length === 0) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
-
-        <View style={styles.emptyWrap}>
-          <Text style={styles.headerTitle}>Cart</Text>
-          <Icon name="shopping-cart" size={74} color={COLORS.text.hint} />
-          <Text style={styles.emptyTitle}>Your cart is empty</Text>
-          <Text style={styles.emptyText}>Add products from Home or Wishlist to continue.</Text>
-          <PrimaryButton
-            title="Start Shopping"
-            onPress={() => navigation.navigate('Home', { screen: 'HomeMain' })}
-            style={styles.emptyButton}
-          />
-        </View>
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
@@ -87,6 +67,14 @@ export default function CartScreen({ navigation }) {
             <Icon name="edit-2" size={15} color={COLORS.white} />
           </TouchableOpacity>
         </View>
+
+        {isCartEmpty && (
+          <View style={styles.emptyCartVisualWrap}>
+            <View style={styles.emptyCartIconCircle}>
+              <Icon name="shopping-bag" size={48} color={COLORS.primary} />
+            </View>
+          </View>
+        )}
 
         {cartItems.map((item) => (
           <View key={`${item.id}-${item.selectedSize || 'M'}-${item.selectedColor || 'Pink'}`} style={styles.cartItemRow}>
@@ -139,61 +127,64 @@ export default function CartScreen({ navigation }) {
           </View>
         ))}
 
-        {wishlistItems.length > 0 && (
-          <View style={styles.wishlistSection}>
-            <Text style={styles.wishlistTitle}>From Your Wishlist</Text>
+        <View style={styles.wishlistSection}>
+          <Text style={styles.wishlistTitle}>From Your Wishlist</Text>
 
-            {wishlistItems.map((item) => (
-              <View key={`wish-${item.id}`} style={styles.wishlistRow}>
-                <View style={styles.wishlistImageWrap}>
-                  <TouchableOpacity
-                    style={styles.imageTapArea}
-                    onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}
-                  >
-                    <Image source={{ uri: item.image }} style={styles.wishlistImage} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.deleteCircle}
-                    onPress={() => handleRemoveFromWishlist(item.id)}
-                  >
-                    <Icon name="trash-2" size={14} color={COLORS.error} />
-                  </TouchableOpacity>
-                </View>
+          {wishlistItems.map((item) => (
+            <View key={`wish-${item.id}`} style={styles.wishlistRow}>
+              <View style={styles.wishlistImageWrap}>
+                <TouchableOpacity
+                  style={styles.imageTapArea}
+                  onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}
+                >
+                  <Image source={{ uri: item.image }} style={styles.wishlistImage} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.deleteCircle}
+                  onPress={() => handleRemoveFromWishlist(item.id)}
+                >
+                  <Icon name="trash-2" size={14} color={COLORS.error} />
+                </TouchableOpacity>
+              </View>
 
-                <View style={styles.wishlistInfoWrap}>
-                  <Text numberOfLines={2} style={styles.itemDesc}>{item.description || 'Lorem ipsum dolor sit amet consectetur.'}</Text>
-                  <Text style={styles.itemPrice}>{formatPrice(item.price)}</Text>
+              <View style={styles.wishlistInfoWrap}>
+                <Text numberOfLines={2} style={styles.itemDesc}>{item.description || 'Lorem ipsum dolor sit amet consectetur.'}</Text>
+                <Text style={styles.itemPrice}>{formatPrice(item.price)}</Text>
 
-                  <View style={styles.wishlistBottomRow}>
-                    <View style={styles.optionChipsRow}>
-                      <View style={styles.optionChip}><Text style={styles.optionChipText}>{item.selectedColor || 'Pink'}</Text></View>
-                      <View style={styles.optionChip}><Text style={styles.optionChipText}>{item.selectedSize || 'M'}</Text></View>
-                    </View>
-
-                    <TouchableOpacity
-                      style={styles.cartAddAction}
-                      onPress={() => handleAddWishlistToCart(item)}
-                    >
-                      <Icon name="shopping-cart" size={18} color={COLORS.primary} />
-                      <View style={styles.plusDot}>
-                        <Icon name="plus" size={9} color={COLORS.white} />
-                      </View>
-                    </TouchableOpacity>
+                <View style={styles.wishlistBottomRow}>
+                  <View style={styles.optionChipsRow}>
+                    <View style={styles.optionChip}><Text style={styles.optionChipText}>{item.selectedColor || 'Pink'}</Text></View>
+                    <View style={styles.optionChip}><Text style={styles.optionChipText}>{item.selectedSize || 'M'}</Text></View>
                   </View>
+
+                  <TouchableOpacity
+                    style={styles.cartAddAction}
+                    onPress={() => handleAddWishlistToCart(item)}
+                  >
+                    <Icon name="shopping-cart" size={18} color={COLORS.primary} />
+                    <View style={styles.plusDot}>
+                      <Icon name="plus" size={9} color={COLORS.white} />
+                    </View>
+                  </TouchableOpacity>
                 </View>
               </View>
-            ))}
-          </View>
-        )}
+            </View>
+          ))}
+        </View>
       </ScrollView>
 
       <View style={styles.bottomBar}>
         <Text style={styles.totalText}>{`Total ${formatPrice(total)}`}</Text>
         <TouchableOpacity
-          style={styles.checkoutButton}
-          onPress={() => navigation.navigate('Payment', { items: cartItems })}
+          style={[styles.checkoutButton, isCartEmpty && styles.checkoutButtonDisabled]}
+          onPress={() => {
+            if (!isCartEmpty) {
+              navigation.navigate('Payment', { items: cartItems });
+            }
+          }}
+          disabled={isCartEmpty}
         >
-          <Text style={styles.checkoutText}>Checkout</Text>
+          <Text style={[styles.checkoutText, isCartEmpty && styles.checkoutTextDisabled]}>Checkout</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -266,6 +257,24 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  emptyCartVisualWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SIZES.xxlarge
+  },
+  emptyCartIconCircle: {
+    width: 136,
+    height: 136,
+    borderRadius: 68,
+    backgroundColor: '#EFEFF1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: COLORS.card.shadow,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4
   },
   cartItemRow: {
     flexDirection: 'row',
@@ -455,32 +464,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
+  checkoutButtonDisabled: {
+    backgroundColor: '#F1F1F1'
+  },
   checkoutText: {
     fontSize: FONTS.sizes.large,
     fontFamily: FONTS.medium,
     color: COLORS.white
   },
-  emptyWrap: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: SIZES.xlarge
-  },
-  emptyTitle: {
-    marginTop: SIZES.medium,
-    marginBottom: SIZES.small,
-    fontSize: FONTS.sizes.xlarge,
-    fontFamily: FONTS.bold,
-    color: COLORS.text.primary
-  },
-  emptyText: {
-    fontSize: FONTS.sizes.medium,
-    fontFamily: FONTS.regular,
-    color: COLORS.text.secondary,
-    textAlign: 'center',
-    marginBottom: SIZES.large
-  },
-  emptyButton: {
-    width: '100%'
+  checkoutTextDisabled: {
+    color: COLORS.text.secondary
   }
 });
