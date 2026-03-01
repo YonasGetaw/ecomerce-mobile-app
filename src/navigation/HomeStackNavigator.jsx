@@ -6,6 +6,7 @@ import ProductSearchScreen from '../screens/product/ProductSearchScreen';
 import ImageSearchScreen from '../screens/product/ImageSearchScreen';
 import FlashSaleDetailScreen from '../screens/product/FlashSaleDetailScreen';
 import FilterScreen from '../screens/filter/FilterScreen';
+import RecentlyViewedScreen from '../screens/main/RecentlyViewedScreen';
 import { COLORS } from '../utils/colors';
 
 const Stack = createStackNavigator();
@@ -24,6 +25,7 @@ export default function HomeStackNavigator() {
       <Stack.Screen name="ImageSearch" component={ImageSearchScreen} />
       <Stack.Screen name="FlashSaleDetail" component={FlashSaleDetailScreen} />
       <Stack.Screen name="Filter" component={FilterScreen} />
+      <Stack.Screen name="RecentlyViewed" component={RecentlyViewedScreen} />
     </Stack.Navigator>
   );
 }

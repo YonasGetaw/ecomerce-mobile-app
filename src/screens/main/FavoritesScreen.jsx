@@ -40,7 +40,7 @@ export default function FavoritesScreen({ navigation }) {
   const renderRecentItem = ({ item }) => (
     <TouchableOpacity
       style={styles.recentThumbWrap}
-      onPress={() => navigation.navigate('ProductDetail', { product: item })}
+      onPress={() => navigation.navigate('Home', { screen: 'RecentlyViewed', params: { items: recentlyViewed } })}
       activeOpacity={0.85}
     >
       <Image source={{ uri: item.image }} style={styles.recentThumb} />
@@ -138,8 +138,15 @@ export default function FavoritesScreen({ navigation }) {
             <Text style={styles.title}>Wishlist</Text>
 
             <View style={styles.recentHeaderRow}>
-              <Text style={styles.recentTitle}>Recently viewed</Text>
-              <TouchableOpacity style={styles.recentArrowButton}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Home', { screen: 'RecentlyViewed', params: { items: recentlyViewed } })}
+              >
+                <Text style={styles.recentTitle}>Recently viewed</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.recentArrowButton}
+                onPress={() => navigation.navigate('Home', { screen: 'RecentlyViewed', params: { items: recentlyViewed } })}
+              >
                 <Icon name="arrow-right" size={16} color={COLORS.white} />
               </TouchableOpacity>
             </View>
