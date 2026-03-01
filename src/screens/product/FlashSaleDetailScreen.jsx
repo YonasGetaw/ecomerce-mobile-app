@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -7,194 +7,163 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
-  FlatList,
-  StatusBar
+  StatusBar,
+  Dimensions
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import { FLASH_SALE_ITEMS } from '../../data/MockData';
 
+const { width: screenWidth } = Dimensions.get('window');
+const DISCOUNT_TABS = ['all', '10', '20', '30', '40', '50'];
+
 export default function FlashSaleDetailScreen({ navigation }) {
-  const [timeLeft, setTimeLeft] = useState({
-    hours: 23,
-    minutes: 59,
-    seconds: 59
-  });
-  const [selectedFilter, setSelectedFilter] = useState('all');
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedTab, setSelectedTab] = useState('20');
+  const [remainingSeconds, setRemainingSeconds] = useState((36 * 60) + 58);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 };
-        } else if (prev.minutes > 0) {
-          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
-        } else if (prev.hours > 0) {
-          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        }
-        return prev;
-      });
+      setRemainingSeconds((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
     return () => clearInterval(timer);
   }, []);
 
-  const filters = [
-    { id: 'all', label: 'All' },
-    { id: '10', label: '10%' },
-    { id: '20', label: '20%' },
-    { id: '30', label: '30%' },
-    { id: '40', label: '40%' },
-    { id: '50', label: '50%' }
+  const saleProducts = useMemo(() => {
+    const imagePool = [
+      'https://loremflickr.com/500/500/fashion,girl?lock=401',
+      'https://loremflickr.com/500/500/shopping,woman?lock=402',
+      'https://loremflickr.com/500/500/lifestyle,model?lock=403',
+      'https://loremflickr.com/500/500/clothes,style?lock=404',
+      'https://loremflickr.com/500/500/dress,fashion?lock=405',
+      'https://loremflickr.com/500/500/boutique,woman?lock=406'
+    ];
+
+    const discountPattern = [20, 20, 20, 20, 30, 40];
+
+    return [...FLASH_SALE_ITEMS, ...FLASH_SALE_ITEMS].slice(0, 6).map((item, index) => {
+      const discount = discountPattern[index] ?? 20;
+      const price = 16;
+      const originalPrice = 20;
+
+      return {
+        ...item,
+        id: `${item.id}-${index}`,
+        image: imagePool[index % imagePool.length],
+        discount,
+        price,
+        originalPrice,
+        description: 'Lorem ipsum dolor sit amet consectetur'
+      };
+    });
+  }, []);
+
+  const filteredProducts = useMemo(() => {
+    if (selectedTab === 'all') return saleProducts;
+    return saleProducts.filter((item) => item.discount === Number(selectedTab));
+  }, [saleProducts, selectedTab]);
+
+  const hours = Math.floor(remainingSeconds / 3600);
+  const minutes = Math.floor((remainingSeconds % 3600) / 60);
+  const seconds = remainingSeconds % 60;
+  const pad = (value) => String(value).padStart(2, '0');
+
+  const heroImages = [
+    'https://loremflickr.com/450/600/woman,purple?lock=501',
+    'https://loremflickr.com/450/600/fashion,white-shirt?lock=502',
+    'https://loremflickr.com/450/600/model,pink-sweater?lock=503',
+    'https://loremflickr.com/450/600/model,blue-sweater?lock=504'
   ];
-
-  const formatTime = (value) => {
-    return value.toString().padStart(2, '0');
-  };
-
-  const renderLiveItem = (item) => (
-    <TouchableOpacity 
-      style={styles.liveItem}
-      onPress={() => setSelectedItem(item)}
-    >
-      <Image source={{ uri: item.image }} style={styles.liveImage} />
-      <View style={styles.liveBadge}>
-        <Text style={styles.liveText}>LIVE</Text>
-      </View>
-      <View style={styles.liveOverlay}>
-        <View style={styles.viewCount}>
-          <Icon name="eye" size={12} color={COLORS.white} />
-          <Text style={styles.viewCountText}>{item.views}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-
-  const renderProductItem = (item) => (
-    <TouchableOpacity 
-      style={styles.productItem}
-      onPress={() => navigation.navigate('ProductDetail', { product: item })}
-    >
-      <View style={styles.productImageContainer}>
-        <Image source={{ uri: item.image }} style={styles.productImage} />
-        <View style={styles.productDiscountBadge}>
-          <Text style={styles.productDiscountText}>-{item.discount}%</Text>
-        </View>
-      </View>
-      <Text style={styles.productName} numberOfLines={2}>{item.name}</Text>
-      <View style={styles.productPriceContainer}>
-        <Text style={styles.productPrice}>${item.price}</Text>
-        {item.originalPrice && (
-          <Text style={styles.productOriginalPrice}>${item.originalPrice}</Text>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-
-  const renderLiveModal = () => {
-    if (!selectedItem) return null;
-
-    return (
-      <View style={styles.modalOverlay}>
-        <TouchableOpacity 
-          style={styles.modalClose}
-          onPress={() => setSelectedItem(null)}
-        >
-          <Icon name="x" size={24} color={COLORS.white} />
-        </TouchableOpacity>
-        
-        <Image source={{ uri: selectedItem.image }} style={styles.modalImage} />
-        
-        <View style={styles.modalContent}>
-          <View style={styles.modalStats}>
-            <View style={styles.viewCount}>
-              <Icon name="eye" size={16} color={COLORS.white} />
-              <Text style={styles.viewCountText}>{selectedItem.views}</Text>
-            </View>
-            <View style={styles.liveBadgeLarge}>
-              <Text style={styles.liveTextLarge}>LIVE</Text>
-            </View>
-          </View>
-
-          <View style={styles.modalActions}>
-            <TouchableOpacity style={styles.shopButton}>
-              <Text style={styles.shopButtonText}>Shop</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.arrowButton}>
-              <Icon name="arrow-right" size={20} color={COLORS.white} />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    );
-  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-left" size={24} color={COLORS.text.primary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Flash Sale</Text>
-        <View style={styles.timerContainer}>
-          <Icon name="clock" size={16} color={COLORS.error} />
-          <Text style={styles.timer}>
-            {formatTime(timeLeft.hours)}:{formatTime(timeLeft.minutes)}:{formatTime(timeLeft.seconds)}
-          </Text>
-        </View>
-      </View>
-
-      {/* Filter Chips */}
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false}
-        style={styles.filterScroll}
-        contentContainerStyle={styles.filterContent}
-      >
-        {filters.map((filter) => (
-          <TouchableOpacity
-            key={filter.id}
-            style={[
-              styles.filterChip,
-              selectedFilter === filter.id && styles.selectedFilterChip
-            ]}
-            onPress={() => setSelectedFilter(filter.id)}
-          >
-            <Text style={[
-              styles.filterText,
-              selectedFilter === filter.id && styles.selectedFilterText
-            ]}>
-              {filter.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Featured Live Item */}
-        <View style={styles.featuredSection}>
-          <Text style={styles.featuredTitle}>Artical Reimagined</Text>
-          {FLASH_SALE_ITEMS
-            .filter(item => item.isLive)
-            .map(item => renderLiveItem(item))}
-          <View style={styles.discountNote}>
-            <Icon name="percent" size={16} color={COLORS.primary} />
-            <Text style={styles.discountNoteText}>20% Discount on all items</Text>
+        <View style={styles.topBlock}>
+          <View style={styles.topCircle} />
+
+          <View style={styles.titleRow}>
+            <View>
+              <Text style={styles.title}>Flash Sale</Text>
+              <Text style={styles.subtitle}>Choose Your Discount</Text>
+            </View>
+
+            <View style={styles.clockRow}>
+              <Icon name="clock" size={17} color={COLORS.white} />
+              <View style={styles.timeChip}><Text style={styles.timeText}>{pad(hours)}</Text></View>
+              <View style={styles.timeChip}><Text style={styles.timeText}>{pad(minutes)}</Text></View>
+              <View style={styles.timeChip}><Text style={styles.timeText}>{pad(seconds)}</Text></View>
+            </View>
           </View>
         </View>
 
-        {/* Product Grid */}
-        <View style={styles.productGrid}>
-          {FLASH_SALE_ITEMS.map(item => renderProductItem(item))}
-          {FLASH_SALE_ITEMS.map(item => renderProductItem(item))}
+        <View style={styles.discountTabsWrap}>
+          {DISCOUNT_TABS.map((tab) => {
+            const isSelected = tab === selectedTab;
+            const label = tab === 'all' ? 'All' : `${tab}%`;
+
+            return (
+              <TouchableOpacity
+                key={tab}
+                style={[styles.discountTab, isSelected && styles.discountTabActive]}
+                onPress={() => setSelectedTab(tab)}
+                activeOpacity={0.85}
+              >
+                <Text style={[styles.discountTabText, isSelected && styles.discountTabTextActive]}>{label}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        <View style={styles.heroCard}>
+          <Text style={styles.heroTitle}>ARTICLE REIMAGINED</Text>
+          <View style={styles.heroRow}>
+            {heroImages.map((uri, index) => (
+              <View key={uri} style={styles.heroImageWrap}>
+                <Image source={{ uri }} style={styles.heroImage} />
+                {index === heroImages.length - 1 && (
+                  <View style={styles.liveBadge}>
+                    <Text style={styles.liveText}>Live</Text>
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>20% Discount</Text>
+          <TouchableOpacity>
+            <Icon name="sliders" size={18} color={COLORS.text.secondary} />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.gridWrap}>
+          {filteredProducts.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.productCard}
+              onPress={() => navigation.navigate('ProductDetail', { product: item })}
+              activeOpacity={0.9}
+            >
+              <View style={styles.imageWrap}>
+                <Image source={{ uri: item.image }} style={styles.productImage} />
+                <View style={styles.discountBadgeCard}>
+                  <Text style={styles.discountBadgeText}>-{item.discount}%</Text>
+                </View>
+              </View>
+
+              <Text style={styles.description} numberOfLines={2}>{item.description}</Text>
+
+              <View style={styles.priceRow}>
+                <Text style={styles.currentPrice}>${item.price.toFixed(2)}</Text>
+                <Text style={styles.oldPrice}>${item.originalPrice.toFixed(2)}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
         </View>
       </ScrollView>
-
-      {renderLiveModal()}
     </SafeAreaView>
   );
 }
@@ -204,251 +173,203 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background
   },
-  header: {
+  topBlock: {
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: SIZES.large,
+    paddingTop: SIZES.medium,
+    paddingBottom: SIZES.xlarge,
+    borderBottomLeftRadius: SIZES.radius.xxlarge,
+    borderBottomRightRadius: SIZES.radius.xxlarge,
+    overflow: 'hidden'
+  },
+  topCircle: {
+    position: 'absolute',
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: COLORS.primaryLight,
+    opacity: 0.25,
+    top: -40,
+    left: -20
+  },
+  titleRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: SIZES.medium,
-    backgroundColor: COLORS.white,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border
+    alignItems: 'center'
   },
-  headerTitle: {
-    fontSize: FONTS.sizes.large,
-    fontFamily: FONTS.bold,
-    color: COLORS.text.primary
+  title: {
+    color: COLORS.white,
+    fontSize: FONTS.sizes.xxxlarge,
+    fontFamily: FONTS.bold
   },
-  timerContainer: {
+  subtitle: {
+    color: COLORS.primaryLight,
+    fontSize: FONTS.sizes.medium,
+    fontFamily: FONTS.regular,
+    marginTop: 2
+  },
+  clockRow: {
     flexDirection: 'row',
+    alignItems: 'center'
+  },
+  timeChip: {
+    minWidth: 30,
+    height: 28,
+    borderRadius: SIZES.radius.medium,
+    backgroundColor: COLORS.white,
     alignItems: 'center',
-    backgroundColor: COLORS.primaryLight,
-    paddingHorizontal: SIZES.small,
-    paddingVertical: 4,
-    borderRadius: SIZES.radius.medium
+    justifyContent: 'center',
+    marginLeft: 6
   },
-  timer: {
-    marginLeft: 4,
-    fontSize: FONTS.sizes.small,
-    fontFamily: FONTS.bold,
-    color: COLORS.error
-  },
-  filterScroll: {
-    backgroundColor: COLORS.white,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border
-  },
-  filterContent: {
-    paddingHorizontal: SIZES.medium,
-    paddingVertical: SIZES.small
-  },
-  filterChip: {
-    paddingHorizontal: SIZES.medium,
-    paddingVertical: SIZES.small,
-    borderRadius: SIZES.radius.large,
-    backgroundColor: COLORS.background,
-    marginRight: SIZES.small
-  },
-  selectedFilterChip: {
-    backgroundColor: COLORS.primary
-  },
-  filterText: {
-    fontSize: FONTS.sizes.small,
-    fontFamily: FONTS.medium,
-    color: COLORS.text.secondary
-  },
-  selectedFilterText: {
-    color: COLORS.white
-  },
-  featuredSection: {
-    backgroundColor: COLORS.white,
-    marginTop: SIZES.small,
-    padding: SIZES.large
-  },
-  featuredTitle: {
-    fontSize: FONTS.sizes.large,
-    fontFamily: FONTS.bold,
+  timeText: {
     color: COLORS.text.primary,
-    marginBottom: SIZES.medium
+    fontSize: FONTS.sizes.medium,
+    fontFamily: FONTS.bold
   },
-  liveItem: {
-    position: 'relative',
-    marginBottom: SIZES.medium
+  discountTabsWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginHorizontal: SIZES.large,
+    marginTop: -SIZES.large,
+    backgroundColor: COLORS.white,
+    borderRadius: SIZES.radius.xlarge,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    justifyContent: 'space-between'
   },
-  liveImage: {
+  discountTab: {
+    minWidth: 44,
+    height: 32,
+    borderRadius: SIZES.radius.round,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  discountTabActive: {
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    backgroundColor: COLORS.primaryLight
+  },
+  discountTabText: {
+    color: COLORS.text.primary,
+    fontSize: FONTS.sizes.small,
+    fontFamily: FONTS.semiBold
+  },
+  discountTabTextActive: {
+    color: COLORS.primary
+  },
+  heroCard: {
+    backgroundColor: COLORS.white,
+    marginHorizontal: SIZES.large,
+    marginTop: SIZES.medium,
+    borderRadius: SIZES.radius.large,
+    paddingTop: SIZES.small,
+    paddingBottom: SIZES.small,
+    paddingHorizontal: 6
+  },
+  heroTitle: {
+    textAlign: 'center',
+    color: COLORS.text.primary,
+    letterSpacing: 3,
+    fontSize: 10,
+    fontFamily: FONTS.medium,
+    marginBottom: SIZES.small
+  },
+  heroRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  heroImageWrap: {
+    width: '24%',
+    borderRadius: SIZES.radius.small,
+    overflow: 'hidden'
+  },
+  heroImage: {
     width: '100%',
-    height: 200,
-    borderRadius: SIZES.radius.large
+    height: 170
   },
   liveBadge: {
     position: 'absolute',
-    top: SIZES.medium,
-    left: SIZES.medium,
-    backgroundColor: COLORS.error,
-    paddingHorizontal: SIZES.small,
-    paddingVertical: 4,
+    right: 4,
+    bottom: 4,
+    backgroundColor: COLORS.success,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
     borderRadius: SIZES.radius.small
   },
   liveText: {
     color: COLORS.white,
-    fontSize: FONTS.sizes.small,
+    fontSize: 10,
     fontFamily: FONTS.bold
   },
-  liveOverlay: {
-    position: 'absolute',
-    bottom: SIZES.medium,
-    right: SIZES.medium
-  },
-  viewCount: {
+  sectionHeader: {
+    marginTop: SIZES.large,
+    marginHorizontal: SIZES.large,
+    marginBottom: SIZES.medium,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.overlay,
-    paddingHorizontal: SIZES.small,
-    paddingVertical: 4,
-    borderRadius: SIZES.radius.small
-  },
-  viewCountText: {
-    color: COLORS.white,
-    fontSize: FONTS.sizes.small,
-    fontFamily: FONTS.medium,
-    marginLeft: 4
-  },
-  discountNote: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: SIZES.small
-  },
-  discountNoteText: {
-    marginLeft: SIZES.small,
-    fontSize: FONTS.sizes.medium,
-    fontFamily: FONTS.medium,
-    color: COLORS.primary
-  },
-  productGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: SIZES.small,
     justifyContent: 'space-between'
   },
-  productItem: {
-    width: '48%',
-    backgroundColor: COLORS.white,
-    borderRadius: SIZES.radius.large,
-    marginBottom: SIZES.medium,
-    padding: SIZES.small
+  sectionTitle: {
+    color: COLORS.text.primary,
+    fontSize: FONTS.sizes.xxxlarge,
+    fontFamily: FONTS.bold
   },
-  productImageContainer: {
-    position: 'relative',
-    marginBottom: SIZES.small
+  gridWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: SIZES.large,
+    paddingBottom: SIZES.xlarge
+  },
+  productCard: {
+    width: (screenWidth - (SIZES.large * 2) - SIZES.small) / 2,
+    marginBottom: SIZES.medium
+  },
+  imageWrap: {
+    borderRadius: SIZES.radius.medium,
+    overflow: 'hidden',
+    position: 'relative'
   },
   productImage: {
     width: '100%',
-    height: 150,
-    borderRadius: SIZES.radius.medium
+    height: 180
   },
-  productDiscountBadge: {
+  discountBadgeCard: {
     position: 'absolute',
-    top: SIZES.small,
-    right: SIZES.small,
+    right: 6,
+    top: 6,
     backgroundColor: COLORS.error,
-    paddingHorizontal: SIZES.small,
-    paddingVertical: 4,
-    borderRadius: SIZES.radius.small
+    borderRadius: SIZES.radius.small,
+    paddingHorizontal: 8,
+    paddingVertical: 3
   },
-  productDiscountText: {
+  discountBadgeText: {
     color: COLORS.white,
-    fontSize: FONTS.sizes.small,
+    fontSize: 10,
     fontFamily: FONTS.bold
   },
-  productName: {
+  description: {
+    marginTop: 8,
+    color: COLORS.text.secondary,
     fontSize: FONTS.sizes.small,
     fontFamily: FONTS.regular,
+    lineHeight: 17
+  },
+  priceRow: {
+    marginTop: 6,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  currentPrice: {
     color: COLORS.text.primary,
-    marginBottom: 4
-  },
-  productPriceContainer: {
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  productPrice: {
-    fontSize: FONTS.sizes.medium,
+    fontSize: FONTS.sizes.xxlarge,
     fontFamily: FONTS.bold,
-    color: COLORS.primary,
-    marginRight: SIZES.small
+    marginRight: 6
   },
-  productOriginalPrice: {
+  oldPrice: {
+    color: COLORS.error,
     fontSize: FONTS.sizes.small,
-    fontFamily: FONTS.regular,
-    color: COLORS.text.hint,
+    fontFamily: FONTS.medium,
     textDecorationLine: 'line-through'
-  },
-  modalOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: COLORS.overlay,
-    justifyContent: 'center'
-  },
-  modalClose: {
-    position: 'absolute',
-    top: 50,
-    right: 20,
-    zIndex: 1,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.overlay,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  modalImage: {
-    width: '100%',
-    height: '70%'
-  },
-  modalContent: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: SIZES.large
-  },
-  modalStats: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: SIZES.medium
-  },
-  liveBadgeLarge: {
-    backgroundColor: COLORS.error,
-    paddingHorizontal: SIZES.medium,
-    paddingVertical: SIZES.small,
-    borderRadius: SIZES.radius.medium
-  },
-  liveTextLarge: {
-    color: COLORS.white,
-    fontSize: FONTS.sizes.medium,
-    fontFamily: FONTS.bold
-  },
-  modalActions: {
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  shopButton: {
-    flex: 1,
-    backgroundColor: COLORS.primary,
-    paddingVertical: SIZES.medium,
-    borderRadius: SIZES.radius.large,
-    alignItems: 'center',
-    marginRight: SIZES.small
-  },
-  shopButtonText: {
-    color: COLORS.white,
-    fontSize: FONTS.sizes.medium,
-    fontFamily: FONTS.bold
-  },
-  arrowButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: COLORS.primary,
-    alignItems: 'center',
-    justifyContent: 'center'
   }
 });
