@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import Slider from '@react-native-community/slider';
-import PrimaryButton from '../components/Buttons/PrimaryButton';
-import { COLORS, FONTS, SIZES } from '../../utils/Colors';
+import PrimaryButton from '../../components/buttons/PrimaryButton';
+import { COLORS, FONTS, SIZES } from '../../utils/colors';
 
 export default function FilterScreen({ navigation }) {
   const [selectedSize, setSelectedSize] = useState([]);

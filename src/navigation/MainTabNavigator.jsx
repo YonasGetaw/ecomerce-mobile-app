@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Feather';
-import HomeScreen from '../screens/main/HomeScreen';
+import HomeStackNavigator from './HomeStackNavigator';
 import ProfileScreen from '../screens/main/ProfileScreen';
 import CategoriesScreen from '../screens/main/CategoriesScreen';
 import CartScreen from '../screens/main/CartScreen';
@@ -65,7 +65,7 @@ export default function MainTabNavigator() {
         headerShown: false
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Home" component={HomeStackNavigator} />
       <Tab.Screen name="Favorites" component={FavoritesScreen} />
       <Tab.Screen name="Categories" component={CategoriesScreen} />
       <Tab.Screen name="Cart" component={CartScreen} />

@@ -16,11 +16,69 @@ import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import { PRODUCTS } from '../../data/MockData';
 
+const IMAGE_TAG_RULES = [
+  { tag: 'shoes', keywords: ['shoe', 'shoes', 'sneaker', 'sneakers', 'running', 'footwear'] },
+  { tag: 'dress', keywords: ['dress', 'gown', 'summer', 'floral'] },
+  { tag: 'jacket', keywords: ['jacket', 'leather', 'coat', 'outerwear'] },
+  { tag: 'jeans', keywords: ['jeans', 'denim', 'pants', 'trouser'] },
+  { tag: 't-shirt', keywords: ['t-shirt', 'shirt', 'tee', 'top'] },
+  { tag: 'fashion', keywords: ['fashion', 'style', 'outfit', 'clothing', 'apparel'] }
+];
+
+const extractImageContextText = (uri = '') => decodeURIComponent(uri).toLowerCase();
+
+const inferImageTags = (imageUri = '') => {
+  const contextText = extractImageContextText(imageUri);
+
+  const detected = IMAGE_TAG_RULES
+    .filter((rule) => rule.keywords.some((keyword) => contextText.includes(keyword)))
+    .map((rule) => rule.tag);
+
+  if (detected.length > 0) {
+    return [...new Set(detected)];
+  }
+
+  return ['fashion'];
+};
+
+const scoreProductsByTags = (products, tags) => {
+  return products
+    .map((product) => {
+      const searchableText = `${product.name} ${product.description || ''}`.toLowerCase();
+      const score = tags.reduce((totalScore, tag) => {
+        const rule = IMAGE_TAG_RULES.find((item) => item.tag === tag);
+        if (!rule) return totalScore;
+        const tagScore = rule.keywords.reduce((keywordScore, keyword) => {
+          return searchableText.includes(keyword) ? keywordScore + 1 : keywordScore;
+        }, 0);
+        return totalScore + tagScore;
+      }, 0);
+
+      return { product, score };
+    })
+    .sort((a, b) => b.score - a.score)
+    .map((entry) => entry.product);
+};
+
+const filterProductsByTag = (products, selectedTag) => {
+  if (!selectedTag || selectedTag === 'all') return products;
+  const rule = IMAGE_TAG_RULES.find((item) => item.tag === selectedTag);
+  if (!rule) return products;
+
+  return products.filter((product) => {
+    const searchableText = `${product.name} ${product.description || ''}`.toLowerCase();
+    return rule.keywords.some((keyword) => searchableText.includes(keyword));
+  });
+};
+
 export default function ImageSearchScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
   const [capturedImage, setCapturedImage] = useState(null);
+  const [baseResults, setBaseResults] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
+  const [detectedTags, setDetectedTags] = useState([]);
+  const [selectedTag, setSelectedTag] = useState('all');
   const [isSearching, setIsSearching] = useState(false);
   const cameraRef = useRef(null);
 
@@ -65,19 +123,33 @@ export default function ImageSearchScreen({ navigation }) {
 
   const performImageSearch = (imageUri) => {
     setIsSearching(true);
-    
-    // Simulate image search API call
+
     setTimeout(() => {
-      // Mock results - in real app, this would be an API call
-      const mockResults = PRODUCTS.slice(0, 4);
-      setSearchResults(mockResults);
+      const tags = inferImageTags(imageUri);
+      const rankedProducts = scoreProductsByTags(PRODUCTS, tags);
+      const fallbackResults = rankedProducts.filter((product, index) => index < 6);
+
+      const finalResults = fallbackResults.length > 0 ? fallbackResults : PRODUCTS.slice(0, 6);
+
+      setDetectedTags(tags);
+      setSelectedTag('all');
+      setBaseResults(finalResults);
+      setSearchResults(finalResults);
       setIsSearching(false);
-    }, 2000);
+    }, 1200);
+  };
+
+  const handleTagFilter = (tag) => {
+    setSelectedTag(tag);
+    setSearchResults(filterProductsByTag(baseResults, tag));
   };
 
   const resetCamera = () => {
     setCapturedImage(null);
+    setBaseResults([]);
     setSearchResults([]);
+    setDetectedTags([]);
+    setSelectedTag('all');
   };
 
   const renderCamera = () => (
@@ -155,6 +227,27 @@ export default function ImageSearchScreen({ navigation }) {
         </View>
       ) : (
         <View style={styles.resultsSection}>
+          <Text style={styles.detectedTitle}>Detected tags</Text>
+          <View style={styles.tagsRow}>
+            <TouchableOpacity
+              style={[styles.tagChip, selectedTag === 'all' && styles.tagChipActive]}
+              onPress={() => handleTagFilter('all')}
+            >
+              <Text style={[styles.tagChipText, selectedTag === 'all' && styles.tagChipTextActive]}>All</Text>
+            </TouchableOpacity>
+            {detectedTags.map((tag) => (
+              <TouchableOpacity
+                key={tag}
+                style={[styles.tagChip, selectedTag === tag && styles.tagChipActive]}
+                onPress={() => handleTagFilter(tag)}
+              >
+                <Text style={[styles.tagChipText, selectedTag === tag && styles.tagChipTextActive]}>
+                  {tag}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
           <Text style={styles.resultsLabel}>Similar Products ({searchResults.length})</Text>
           <View style={styles.resultsGrid}>
             {searchResults.map((item) => (
@@ -324,6 +417,41 @@ const styles = StyleSheet.create({
   resultsSection: {
     flex: 1,
     padding: SIZES.large
+  },
+  detectedTitle: {
+    fontSize: FONTS.sizes.small,
+    fontFamily: FONTS.bold,
+    color: COLORS.text.secondary,
+    marginBottom: SIZES.small,
+    textTransform: 'uppercase'
+  },
+  tagsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: SIZES.medium
+  },
+  tagChip: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.white,
+    paddingHorizontal: SIZES.medium,
+    paddingVertical: SIZES.small / 2,
+    borderRadius: SIZES.radius.large,
+    marginRight: SIZES.small,
+    marginBottom: SIZES.small
+  },
+  tagChipActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary
+  },
+  tagChipText: {
+    fontSize: FONTS.sizes.small,
+    fontFamily: FONTS.medium,
+    color: COLORS.text.primary,
+    textTransform: 'capitalize'
+  },
+  tagChipTextActive: {
+    color: COLORS.white
   },
   resultsLabel: {
     fontSize: FONTS.sizes.medium,

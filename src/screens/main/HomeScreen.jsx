@@ -185,7 +185,7 @@ export default function HomeScreen({ navigation }) {
           onSubmitEditing={() => handleSearch()}
           placeholderTextColor={COLORS.text.hint}
         />
-        <TouchableOpacity style={styles.cameraButton} onPress={() => navigation.navigate('CameraSearch')}>
+        <TouchableOpacity style={styles.cameraButton} onPress={() => navigation.navigate('ImageSearch')}>
           <Icon name="camera" size={20} color={COLORS.primary} />
         </TouchableOpacity>
       </View>

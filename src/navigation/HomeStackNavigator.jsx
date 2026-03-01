@@ -6,7 +6,7 @@ import ProductSearchScreen from '../screens/product/ProductSearchScreen';
 import ImageSearchScreen from '../screens/product/ImageSearchScreen';
 import FlashSaleDetailScreen from '../screens/product/FlashSaleDetailScreen';
 import FilterScreen from '../screens/filter/FilterScreen';
-import { COLORS } from '../../utils/colors';
+import { COLORS } from '../utils/colors';
 
 const Stack = createStackNavigator();
 
