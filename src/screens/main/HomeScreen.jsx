@@ -9,18 +9,22 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
-  StatusBar
+  StatusBar,
+  Dimensions
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import ProductCard from '../../components/Cards/ProductCard';
 import { PRODUCTS, FLASH_SALE_ITEMS } from '../../data/MockData';
 
+const { width: screenWidth } = Dimensions.get('window');
+
 export default function HomeScreen({ navigation }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchHistory, setShowSearchHistory] = useState(false);
   const [searchHistory, setSearchHistory] = useState(['Dresses', 'Jeans', 'T-Shirts']);
   const [recommendations] = useState(['Skirt', 'Accessories', 'Black T-Shirt', 'Jeans', 'White Shoes']);
+  const [activePromoIndex, setActivePromoIndex] = useState(0);
 
   const sampleProductImages = [
     'https://loremflickr.com/700/700/fashion,shopping?lock=101',
@@ -116,17 +120,47 @@ export default function HomeScreen({ navigation }) {
   ];
 
   const promoBanners = [
-    { id: '1', title: 'Big Sale', discount: '50%', description: 'Happening Now', color: '#FF6B6B' },
-    { id: '2', title: 'Summer Special', discount: '30%', description: 'Limited Time', color: '#4ECDC4' },
-    { id: '3', title: 'New Arrivals', discount: 'Up to 40%', description: 'Shop Now', color: '#45B7D1' },
-    { id: '4', title: 'Clearance', discount: '70%', description: 'Final Sale', color: '#96CEB4' },
-    { id: '5', title: 'Flash Deal', discount: '60%', description: 'Today Only', color: '#FFEAA7' }
+    {
+      id: '1',
+      title: 'Big Sale',
+      discount: 'Up to 50%',
+      badge: 'Happening\nNow',
+      color: '#F4B400',
+      image: 'https://loremflickr.com/600/600/woman,shopping?lock=301'
+    },
+    {
+      id: '2',
+      title: 'Summer Sale',
+      discount: 'Up to 40%',
+      badge: 'Limited\nTime',
+      color: '#FF8A65',
+      image: 'https://loremflickr.com/600/600/fashion,summer?lock=302'
+    },
+    {
+      id: '3',
+      title: 'New Arrivals',
+      discount: 'Up to 30%',
+      badge: 'Shop\nNow',
+      color: '#4DB6AC',
+      image: 'https://loremflickr.com/600/600/clothing,model?lock=303'
+    },
+    {
+      id: '4',
+      title: 'Flash Deal',
+      discount: 'Up to 60%',
+      badge: 'Today\nOnly',
+      color: '#64B5F6',
+      image: 'https://loremflickr.com/600/600/retail,shopping?lock=304'
+    }
   ];
 
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      setSearchHistory([searchQuery, ...searchHistory.slice(0, 4)]);
-      navigation.navigate('ProductSearch', { query: searchQuery });
+  const handleSearch = (queryText = searchQuery) => {
+    const normalizedQuery = (queryText || '').trim();
+
+    if (normalizedQuery) {
+      setSearchQuery(normalizedQuery);
+      setSearchHistory((prevHistory) => [normalizedQuery, ...prevHistory.filter(item => item !== normalizedQuery).slice(0, 4)]);
+      navigation.navigate('ProductSearch', { query: normalizedQuery });
       setShowSearchHistory(false);
     }
   };
@@ -139,17 +173,19 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.header}>
       <Text style={styles.shopText}>Shop</Text>
       <View style={styles.searchContainer}>
-        <Icon name="search" size={20} color={COLORS.text.secondary} />
+        <TouchableOpacity onPress={() => handleSearch()}>
+          <Icon name="search" size={20} color={COLORS.text.secondary} />
+        </TouchableOpacity>
         <TextInput
           style={styles.searchInput}
           placeholder="Search products..."
           value={searchQuery}
           onChangeText={setSearchQuery}
           onFocus={() => setShowSearchHistory(true)}
-          onSubmitEditing={handleSearch}
+          onSubmitEditing={() => handleSearch()}
           placeholderTextColor={COLORS.text.hint}
         />
-        <TouchableOpacity onPress={() => navigation.navigate('CameraSearch')}>
+        <TouchableOpacity style={styles.cameraButton} onPress={() => navigation.navigate('CameraSearch')}>
           <Icon name="camera" size={20} color={COLORS.primary} />
         </TouchableOpacity>
       </View>
@@ -167,8 +203,7 @@ export default function HomeScreen({ navigation }) {
                 <TouchableOpacity 
                   style={styles.historyTextContainer}
                   onPress={() => {
-                    setSearchQuery(item);
-                    handleSearch();
+                    handleSearch(item);
                   }}
                 >
                   <Icon name="clock" size={16} color={COLORS.text.hint} />
@@ -190,8 +225,7 @@ export default function HomeScreen({ navigation }) {
                 key={index}
                 style={styles.recommendationChip}
                 onPress={() => {
-                  setSearchQuery(item);
-                  handleSearch();
+                  handleSearch(item);
                 }}
               >
                 <Text style={styles.recommendationText}>{item}</Text>
@@ -214,23 +248,44 @@ export default function HomeScreen({ navigation }) {
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* Promo Cards */}
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false}
-            style={styles.promoScroll}
-            contentContainerStyle={styles.promoContent}
-          >
-            {promoBanners.map((banner) => (
-              <TouchableOpacity
-                key={banner.id}
-                style={[styles.promoCard, { backgroundColor: banner.color }]}
-              >
-                <Text style={styles.promoTitle}>{banner.title}</Text>
-                <Text style={styles.promoDiscount}>Up to {banner.discount}</Text>
-                <Text style={styles.promoDescription}>{banner.description}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          <View style={styles.promoCarouselSection}>
+            <FlatList
+              data={promoBanners}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item) => item.id}
+              onMomentumScrollEnd={(event) => {
+                const currentIndex = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
+                setActivePromoIndex(currentIndex);
+              }}
+              renderItem={({ item }) => (
+                <View style={styles.promoItemWrapper}>
+                  <TouchableOpacity style={[styles.promoCard, { backgroundColor: item.color }]} activeOpacity={0.9}>
+                    <View style={styles.promoLeftContent}>
+                      <Text style={styles.promoTitle}>{item.title}</Text>
+                      <Text style={styles.promoDiscount}>{item.discount}</Text>
+
+                      <View style={styles.promoBadgeBubble}>
+                        <Text style={styles.promoBadgeText}>{item.badge}</Text>
+                      </View>
+                    </View>
+
+                    <Image source={{ uri: item.image }} style={styles.promoSideImage} />
+                  </TouchableOpacity>
+                </View>
+              )}
+            />
+
+            <View style={styles.promoDotsContainer}>
+              {promoBanners.map((_, index) => (
+                <View
+                  key={`promo-dot-${index}`}
+                  style={[styles.promoDot, activePromoIndex === index && styles.activePromoDot]}
+                />
+              ))}
+            </View>
+          </View>
 
           {/* Categories */}
           <View style={styles.section}>
@@ -418,7 +473,7 @@ const styles = StyleSheet.create({
   shopText: {
     fontSize: FONTS.sizes.xxlarge,
     fontFamily: FONTS.bold,
-    color: COLORS.primary,
+    color: COLORS.black,
     marginRight: SIZES.medium
   },
   searchContainer: {
@@ -428,7 +483,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
     borderRadius: SIZES.radius.large,
     paddingHorizontal: SIZES.medium,
-    height: 44
+    height: 48
   },
   searchInput: {
     flex: 1,
@@ -436,7 +491,11 @@ const styles = StyleSheet.create({
     fontSize: FONTS.sizes.medium,
     fontFamily: FONTS.regular,
     color: COLORS.text.primary,
-    padding: 0
+    paddingHorizontal: SIZES.small,
+    paddingVertical: SIZES.small
+  },
+  cameraButton: {
+    marginLeft: SIZES.small
   },
   searchOverlay: {
     flex: 1,
@@ -484,36 +543,74 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.medium,
     color: COLORS.text.primary
   },
-  promoScroll: {
+  promoCarouselSection: {
     marginVertical: SIZES.medium
   },
-  promoContent: {
+  promoItemWrapper: {
+    width: screenWidth,
     paddingHorizontal: SIZES.medium
   },
   promoCard: {
-    width: 280,
-    height: 140,
+    width: '100%',
+    height: 126,
     borderRadius: SIZES.radius.large,
-    padding: SIZES.large,
-    marginRight: SIZES.medium,
-    justifyContent: 'flex-end'
+    overflow: 'hidden',
+    flexDirection: 'row'
+  },
+  promoLeftContent: {
+    flex: 1,
+    paddingHorizontal: SIZES.large,
+    paddingVertical: SIZES.medium,
+    justifyContent: 'space-between'
+  },
+  promoSideImage: {
+    width: '44%',
+    height: '100%'
   },
   promoTitle: {
-    fontSize: FONTS.sizes.large,
+    fontSize: FONTS.sizes.huge,
     fontFamily: FONTS.bold,
-    color: COLORS.white,
-    marginBottom: 4
+    color: COLORS.white
   },
   promoDiscount: {
-    fontSize: FONTS.sizes.xxlarge,
-    fontFamily: FONTS.bold,
-    color: COLORS.white,
-    marginBottom: 4
-  },
-  promoDescription: {
-    fontSize: FONTS.sizes.medium,
-    fontFamily: FONTS.regular,
+    fontSize: FONTS.sizes.large,
+    fontFamily: FONTS.medium,
     color: COLORS.white
+  },
+  promoBadgeBubble: {
+    width: 82,
+    height: 82,
+    borderRadius: 41,
+    backgroundColor: 'rgba(255,255,255,0.28)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: -SIZES.large,
+    marginBottom: -SIZES.medium
+  },
+  promoBadgeText: {
+    color: COLORS.white,
+    fontSize: FONTS.sizes.medium,
+    fontFamily: FONTS.bold,
+    textAlign: 'center',
+    lineHeight: 18
+  },
+  promoDotsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: SIZES.small
+  },
+  promoDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#C7D4F6',
+    marginHorizontal: 4
+  },
+  activePromoDot: {
+    width: 38,
+    borderRadius: 6,
+    backgroundColor: COLORS.primary
   },
   section: {
     marginBottom: SIZES.xlarge,
