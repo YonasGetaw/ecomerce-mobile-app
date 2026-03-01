@@ -15,7 +15,12 @@ import { PRODUCTS } from '../../data/MockData';
 
 export default function RecentlyViewedScreen({ navigation, route }) {
   const [selectedDay, setSelectedDay] = useState('Today');
+  const [showDatePanel, setShowDatePanel] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(18);
+  const [selectedMonthIndex, setSelectedMonthIndex] = useState(3);
   const items = route?.params?.items || [];
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const monthDates = Array.from({ length: 31 }, (_, index) => index + 1);
 
   const viewedItems = useMemo(() => {
     const fallback = [...PRODUCTS, ...PRODUCTS].slice(0, 8);
@@ -35,6 +40,60 @@ export default function RecentlyViewedScreen({ navigation, route }) {
     </TouchableOpacity>
   );
 
+  const renderDatePanel = () => {
+    if (!showDatePanel) return null;
+
+    return (
+      <View style={styles.datePanelWrap}>
+        <View style={styles.datePanelHeader}>
+          <TouchableOpacity
+            style={styles.monthArrowButton}
+            onPress={() => setSelectedMonthIndex((prev) => (prev === 0 ? 11 : prev - 1))}
+          >
+            <Icon name="chevron-left" size={16} color={COLORS.primary} />
+          </TouchableOpacity>
+
+          <View style={styles.monthNamePill}>
+            <Text style={styles.monthNameText}>{months[selectedMonthIndex]}</Text>
+          </View>
+
+          <TouchableOpacity
+            style={styles.monthArrowButton}
+            onPress={() => setSelectedMonthIndex((prev) => (prev === 11 ? 0 : prev + 1))}
+          >
+            <Icon name="chevron-right" size={16} color={COLORS.primary} />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.dateGrid}>
+          {monthDates.map((date) => {
+            const isSelected = date === selectedDate;
+
+            return (
+              <TouchableOpacity
+                key={date}
+                style={[styles.dateCell, isSelected && styles.dateCellActive]}
+                onPress={() => {
+                  setSelectedDate(date);
+                  setSelectedDay('Yesterday');
+                }}
+              >
+                <Text style={[styles.dateCellText, isSelected && styles.dateCellTextActive]}>{String(date).padStart(2, '0')}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        <TouchableOpacity
+          style={styles.collapseButton}
+          onPress={() => setShowDatePanel(false)}
+        >
+          <Icon name="chevron-up" size={16} color={COLORS.primary} />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
@@ -46,7 +105,10 @@ export default function RecentlyViewedScreen({ navigation, route }) {
       <View style={styles.filtersRow}>
         <TouchableOpacity
           style={[styles.dayChip, selectedDay === 'Today' && styles.dayChipActive]}
-          onPress={() => setSelectedDay('Today')}
+          onPress={() => {
+            setSelectedDay('Today');
+            setShowDatePanel(false);
+          }}
         >
           <Text style={[styles.dayChipText, selectedDay === 'Today' && styles.dayChipTextActive]}>Today</Text>
           <View style={styles.dayCheck}>
@@ -59,11 +121,19 @@ export default function RecentlyViewedScreen({ navigation, route }) {
           onPress={() => setSelectedDay('Yesterday')}
         >
           <Text style={[styles.dayChipText, selectedDay === 'Yesterday' && styles.dayChipTextActive]}>Yesterday</Text>
-          <View style={styles.dayCheck}>
-            <Icon name="chevron-down" size={12} color={COLORS.white} />
-          </View>
+          <TouchableOpacity
+            style={styles.dayCheck}
+            onPress={() => {
+              setSelectedDay('Yesterday');
+              setShowDatePanel((prev) => !prev);
+            }}
+          >
+            <Icon name={showDatePanel ? 'chevron-up' : 'chevron-down'} size={12} color={COLORS.white} />
+          </TouchableOpacity>
         </TouchableOpacity>
       </View>
+
+      {renderDatePanel()}
 
       <FlatList
         data={viewedItems}
@@ -126,6 +196,87 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 11,
     backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  datePanelWrap: {
+    marginHorizontal: SIZES.medium,
+    backgroundColor: COLORS.white,
+    borderRadius: SIZES.radius.xlarge,
+    paddingTop: SIZES.small,
+    paddingBottom: SIZES.medium,
+    paddingHorizontal: SIZES.small,
+    marginBottom: SIZES.medium,
+    shadowColor: COLORS.card.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 3,
+    position: 'relative'
+  },
+  datePanelHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: SIZES.small
+  },
+  monthArrowButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  monthNamePill: {
+    minWidth: 120,
+    height: 30,
+    borderRadius: SIZES.radius.round,
+    backgroundColor: COLORS.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: SIZES.medium
+  },
+  monthNameText: {
+    fontSize: FONTS.sizes.large,
+    fontFamily: FONTS.medium,
+    color: COLORS.primary
+  },
+  dateGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between'
+  },
+  dateCell: {
+    width: '13.4%',
+    aspectRatio: 1,
+    borderRadius: SIZES.radius.round,
+    backgroundColor: COLORS.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6
+  },
+  dateCellActive: {
+    backgroundColor: COLORS.primaryLight
+  },
+  dateCellText: {
+    fontSize: FONTS.sizes.medium,
+    fontFamily: FONTS.bold,
+    color: COLORS.text.primary
+  },
+  dateCellTextActive: {
+    color: COLORS.primary
+  },
+  collapseButton: {
+    position: 'absolute',
+    bottom: -14,
+    alignSelf: 'center',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: COLORS.white,
+    borderWidth: 1,
+    borderColor: COLORS.border,
     alignItems: 'center',
     justifyContent: 'center'
   },
