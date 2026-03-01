@@ -217,8 +217,8 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.medium
   },
   headerTitle: {
-    fontSize: 44,
-    lineHeight: 48,
+    fontSize: 34,
+    lineHeight: 38,
     fontFamily: FONTS.bold,
     color: COLORS.text.primary
   },
@@ -300,14 +300,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   itemDesc: {
-    fontSize: FONTS.sizes.medium,
-    lineHeight: 19,
+    fontSize: FONTS.sizes.small,
+    lineHeight: 17,
     fontFamily: FONTS.regular,
     color: COLORS.text.primary
   },
   itemVariant: {
     marginTop: 3,
-    fontSize: FONTS.sizes.large,
+    fontSize: FONTS.sizes.medium,
     fontFamily: FONTS.medium,
     color: COLORS.text.primary
   },
@@ -318,8 +318,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   itemPrice: {
-    fontSize: 36,
-    lineHeight: 38,
+    fontSize: 28,
+    lineHeight: 30,
     fontFamily: FONTS.bold,
     color: COLORS.text.primary
   },
@@ -355,8 +355,8 @@ const styles = StyleSheet.create({
     marginTop: SIZES.small
   },
   wishlistTitle: {
-    fontSize: 40,
-    lineHeight: 44,
+    fontSize: 30,
+    lineHeight: 34,
     fontFamily: FONTS.bold,
     color: COLORS.text.primary,
     marginBottom: SIZES.small
@@ -437,8 +437,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.medium
   },
   totalText: {
-    fontSize: 38,
-    lineHeight: 40,
+    fontSize: 30,
+    lineHeight: 34,
     fontFamily: FONTS.bold,
     color: COLORS.text.primary
   },
