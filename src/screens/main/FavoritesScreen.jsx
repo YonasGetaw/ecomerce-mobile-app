@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,153 +7,96 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
-  Alert,
-  StatusBar
+  StatusBar,
+  Alert
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import PrimaryButton from '../../components/buttons/PrimaryButton';
 import { useFavoritesContext } from '../../Context/FavoritesContext';
+import { useCartContext } from '../../Context/CartContext';
 
 export default function FavoritesScreen({ navigation }) {
   const { favorites, removeFromFavorites } = useFavoritesContext();
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [isEditing, setIsEditing] = useState(false);
+  const { addToCart } = useCartContext();
 
-  const toggleFavorite = (item) => {
-    Alert.alert(
-      'Remove from Favorites',
-      `Are you sure you want to remove ${item.name} from your favorites?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: async () => {
-            await removeFromFavorites(item.id);
-            setSelectedItems(prev => prev.filter(id => id !== item.id));
-          }
-        }
-      ]
-    );
+  const recentlyViewed = useMemo(() => favorites.slice(0, 8), [favorites]);
+
+  const handleRemove = async (itemId) => {
+    await removeFromFavorites(itemId);
   };
 
-  const toggleSelect = (itemId) => {
-    if (selectedItems.includes(itemId)) {
-      setSelectedItems(prev => prev.filter(id => id !== itemId));
-    } else {
-      setSelectedItems(prev => [...prev, itemId]);
-    }
+  const handleAddToCart = async (item) => {
+    await addToCart(item, 1, item.selectedSize ?? 'M', item.selectedColor ?? 'Pink');
+    Alert.alert('Added to Cart', `${item.name} added to your cart.`, [
+      {
+        text: 'View Cart',
+        onPress: () => navigation.navigate('Cart', { screen: 'CartMain' })
+      },
+      { text: 'OK', style: 'cancel' }
+    ]);
   };
 
-  const toggleSelectAll = () => {
-    if (selectedItems.length === favorites.length) {
-      setSelectedItems([]);
-    } else {
-      setSelectedItems(favorites.map(item => item.id));
-    }
-  };
+  const renderRecentItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.recentThumbWrap}
+      onPress={() => navigation.navigate('ProductDetail', { product: item })}
+      activeOpacity={0.85}
+    >
+      <Image source={{ uri: item.image }} style={styles.recentThumb} />
+    </TouchableOpacity>
+  );
 
-  const addSelectedToCart = () => {
-    const selectedProducts = favorites.filter(item => selectedItems.includes(item.id));
-    Alert.alert(
-      'Added to Cart',
-      `${selectedProducts.length} item(s) added to your cart`,
-      [
-        {
-          text: 'View Cart',
-          onPress: () => navigation.navigate('Cart')
-        },
-        {
-          text: 'Continue Shopping',
-          style: 'cancel'
-        }
-      ]
-    );
-    // Here you would add to cart logic
-    setIsEditing(false);
-    setSelectedItems([]);
-  };
-
-  const removeSelected = () => {
-    Alert.alert(
-      'Remove Items',
-      `Are you sure you want to remove ${selectedItems.length} item(s) from favorites?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: async () => {
-            await Promise.all(selectedItems.map((itemId) => removeFromFavorites(itemId)));
-            setSelectedItems([]);
-            setIsEditing(false);
-          }
-        }
-      ]
-    );
-  };
-
-  const renderFavoriteItem = ({ item }) => (
-    <View style={styles.favoriteItem}>
-      {isEditing && (
-        <TouchableOpacity
-          style={styles.checkbox}
-          onPress={() => toggleSelect(item.id)}
-        >
-          <View style={[
-            styles.checkboxInner,
-            selectedItems.includes(item.id) && styles.checkboxSelected
-          ]}>
-            {selectedItems.includes(item.id) && (
-              <Icon name="check" size={12} color={COLORS.white} />
-            )}
-          </View>
-        </TouchableOpacity>
-      )}
-
+  const renderWishlistItem = ({ item }) => (
+    <View style={styles.card}>
       <TouchableOpacity
-        style={[styles.itemContent, isEditing && styles.itemContentWithCheckbox]}
         onPress={() => navigation.navigate('ProductDetail', { product: item })}
+        style={styles.imageWrap}
+        activeOpacity={0.85}
       >
         <Image source={{ uri: item.image }} style={styles.itemImage} />
-        
-        <View style={styles.itemDetails}>
-          <Text style={styles.itemName} numberOfLines={2}>{item.name}</Text>
-          
-          <View style={styles.itemPriceContainer}>
-            <Text style={styles.itemPrice}>${item.price}</Text>
-            {item.originalPrice && (
-              <Text style={styles.itemOriginalPrice}>${item.originalPrice}</Text>
-            )}
-          </View>
 
-          <View style={styles.itemRating}>
-            <Icon name="star" size={14} color="#FFD700" />
-            <Text style={styles.ratingText}>{item.rating} ({item.reviews} reviews)</Text>
-          </View>
-
-          {!isEditing && (
-            <View style={styles.itemActions}>
-              <TouchableOpacity
-                style={styles.addToCartButton}
-                onPress={() => {
-                  Alert.alert('Added to Cart', `${item.name} added to your cart`);
-                }}
-              >
-                <Text style={styles.addToCartText}>Add to Cart</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.removeButton}
-                onPress={() => toggleFavorite(item)}
-              >
-                <Icon name="trash-2" size={18} color={COLORS.error} />
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
+        <TouchableOpacity
+          style={styles.deleteCircle}
+          onPress={() => handleRemove(item.id)}
+        >
+          <Icon name="trash-2" size={14} color={COLORS.error} />
+        </TouchableOpacity>
       </TouchableOpacity>
+
+      <View style={styles.detailsWrap}>
+        <Text style={styles.descriptionText} numberOfLines={2}>
+          {item.description || 'Lorem ipsum dolor sit amet consectetur.'}
+        </Text>
+
+        <View style={styles.priceRow}>
+          {item.originalPrice ? (
+            <Text style={styles.oldPrice}>${Number(item.originalPrice).toFixed(2)}</Text>
+          ) : null}
+          <Text style={styles.currentPrice}>${Number(item.price).toFixed(2)}</Text>
+        </View>
+
+        <View style={styles.bottomMetaRow}>
+          <View style={styles.optionChipsRow}>
+            <View style={styles.optionChip}>
+              <Text style={styles.optionChipText}>{item.selectedColor || 'Pink'}</Text>
+            </View>
+            <View style={styles.optionChip}>
+              <Text style={styles.optionChipText}>{item.selectedSize || 'M'}</Text>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={styles.cartActionButton}
+            onPress={() => handleAddToCart(item)}
+          >
+            <Icon name="shopping-cart" size={18} color={COLORS.primary} />
+            <View style={styles.plusDot}>
+              <Icon name="plus" size={10} color={COLORS.white} />
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 
@@ -161,21 +104,18 @@ export default function FavoritesScreen({ navigation }) {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
-        
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Favorites</Text>
-          <View style={{ width: 24 }} />
+
+        <View style={styles.headerOnly}>
+          <Text style={styles.title}>Wishlist</Text>
         </View>
 
         <View style={styles.emptyContainer}>
-          <Icon name="heart" size={80} color={COLORS.text.hint} />
-          <Text style={styles.emptyTitle}>No favorites yet</Text>
-          <Text style={styles.emptyText}>
-            Items you favorite will appear here. Start exploring and save your favorite items!
-          </Text>
+          <Icon name="heart" size={78} color={COLORS.text.hint} />
+          <Text style={styles.emptyTitle}>No wishlist items yet</Text>
+          <Text style={styles.emptyText}>Save products to wishlist and they will appear here.</Text>
           <PrimaryButton
             title="Explore Products"
-            onPress={() => navigation.navigate('Home')}
+            onPress={() => navigation.navigate('Home', { screen: 'HomeMain' })}
             style={styles.exploreButton}
           />
         </View>
@@ -186,74 +126,36 @@ export default function FavoritesScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>
-          Favorites {isEditing ? `(${selectedItems.length} selected)` : ''}
-        </Text>
-        <TouchableOpacity onPress={() => setIsEditing(!isEditing)}>
-          <Text style={styles.editText}>
-            {isEditing ? 'Done' : 'Edit'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {isEditing && (
-        <View style={styles.editBar}>
-          <TouchableOpacity style={styles.selectAll} onPress={toggleSelectAll}>
-            <Text style={styles.selectAllText}>
-              {selectedItems.length === favorites.length ? 'Deselect All' : 'Select All'}
-            </Text>
-          </TouchableOpacity>
-          
-          <View style={styles.editActions}>
-            <TouchableOpacity
-              style={[styles.editAction, selectedItems.length === 0 && styles.disabledAction]}
-              onPress={addSelectedToCart}
-              disabled={selectedItems.length === 0}
-            >
-              <Icon 
-                name="shopping-cart" 
-                size={18} 
-                color={selectedItems.length === 0 ? COLORS.text.hint : COLORS.primary} 
-              />
-              <Text style={[
-                styles.actionText,
-                selectedItems.length === 0 && styles.disabledText
-              ]}>
-                Add to Cart
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.editAction, selectedItems.length === 0 && styles.disabledAction]}
-              onPress={removeSelected}
-              disabled={selectedItems.length === 0}
-            >
-              <Icon 
-                name="trash-2" 
-                size={18} 
-                color={selectedItems.length === 0 ? COLORS.text.hint : COLORS.error} 
-              />
-              <Text style={[
-                styles.actionText,
-                selectedItems.length === 0 && styles.disabledText,
-                selectedItems.length > 0 && styles.removeText
-              ]}>
-                Remove
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
 
       <FlatList
         data={favorites}
-        renderItem={renderFavoriteItem}
         keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
+        renderItem={renderWishlistItem}
         contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={(
+          <View>
+            <Text style={styles.title}>Wishlist</Text>
+
+            <View style={styles.recentHeaderRow}>
+              <Text style={styles.recentTitle}>Recently viewed</Text>
+              <TouchableOpacity style={styles.recentArrowButton}>
+                <Icon name="arrow-right" size={16} color={COLORS.white} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.recentStripWrap}>
+              <FlatList
+                data={recentlyViewed}
+                horizontal
+                keyExtractor={(item) => `recent-${item.id}`}
+                showsHorizontalScrollIndicator={false}
+                renderItem={renderRecentItem}
+                contentContainerStyle={styles.recentStripContent}
+              />
+            </View>
+          </View>
+        )}
       />
     </SafeAreaView>
   );
@@ -264,187 +166,189 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: SIZES.medium,
-    backgroundColor: COLORS.white,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border
+  listContent: {
+    paddingHorizontal: SIZES.medium,
+    paddingBottom: SIZES.large
   },
-  headerTitle: {
-    fontSize: FONTS.sizes.large,
+  headerOnly: {
+    paddingHorizontal: SIZES.medium,
+    paddingTop: SIZES.medium
+  },
+  title: {
+    marginTop: SIZES.small,
+    marginBottom: SIZES.medium,
+    fontSize: 42,
+    lineHeight: 46,
     fontFamily: FONTS.bold,
     color: COLORS.text.primary
   },
-  editText: {
-    fontSize: FONTS.sizes.medium,
-    fontFamily: FONTS.medium,
-    color: COLORS.primary
-  },
-  editBar: {
+  recentHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: SIZES.medium,
-    backgroundColor: COLORS.white,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border
+    marginBottom: SIZES.small
   },
-  selectAll: {
-    paddingVertical: SIZES.small
+  recentTitle: {
+    fontSize: FONTS.sizes.xlarge,
+    fontFamily: FONTS.bold,
+    color: COLORS.text.primary
   },
-  selectAllText: {
-    fontSize: FONTS.sizes.medium,
-    fontFamily: FONTS.medium,
-    color: COLORS.primary
-  },
-  editActions: {
-    flexDirection: 'row'
-  },
-  editAction: {
-    flexDirection: 'row',
+  recentArrowButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: COLORS.primary,
     alignItems: 'center',
-    marginLeft: SIZES.large,
-    paddingVertical: SIZES.small
+    justifyContent: 'center'
   },
-  disabledAction: {
-    opacity: 0.5
+  recentStripWrap: {
+    borderWidth: 2,
+    borderColor: COLORS.info,
+    paddingVertical: SIZES.small,
+    paddingHorizontal: SIZES.small,
+    marginBottom: SIZES.medium
   },
-  actionText: {
-    marginLeft: SIZES.small,
-    fontSize: FONTS.sizes.medium,
-    fontFamily: FONTS.medium,
-    color: COLORS.primary
+  recentStripContent: {
+    alignItems: 'center'
   },
-  disabledText: {
-    color: COLORS.text.hint
+  recentThumbWrap: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    overflow: 'hidden',
+    marginRight: SIZES.small,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.white
   },
-  removeText: {
-    color: COLORS.error
+  recentThumb: {
+    width: '100%',
+    height: '100%'
   },
-  listContent: {
-    padding: SIZES.medium
-  },
-  favoriteItem: {
+  card: {
     flexDirection: 'row',
     backgroundColor: COLORS.white,
-    borderRadius: SIZES.radius.large,
-    marginBottom: SIZES.medium,
-    padding: SIZES.medium,
+    borderRadius: SIZES.radius.medium,
+    marginBottom: SIZES.small,
+    padding: SIZES.small,
     shadowColor: COLORS.card.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.09,
     shadowRadius: 4,
     elevation: 2
   },
-  checkbox: {
-    marginRight: SIZES.medium,
-    justifyContent: 'center'
-  },
-  checkboxInner: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: COLORS.border,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  checkboxSelected: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary
-  },
-  itemContent: {
-    flex: 1,
-    flexDirection: 'row'
-  },
-  itemContentWithCheckbox: {
-    flex: 1
+  imageWrap: {
+    width: 138,
+    height: 118,
+    borderRadius: SIZES.radius.medium,
+    overflow: 'hidden',
+    marginRight: SIZES.small,
+    position: 'relative'
   },
   itemImage: {
-    width: 100,
-    height: 100,
-    borderRadius: SIZES.radius.medium,
-    marginRight: SIZES.medium
+    width: '100%',
+    height: '100%'
   },
-  itemDetails: {
-    flex: 1
+  deleteCircle: {
+    position: 'absolute',
+    left: 8,
+    bottom: 8,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: COLORS.white,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
-  itemName: {
+  detailsWrap: {
+    flex: 1,
+    justifyContent: 'space-between'
+  },
+  descriptionText: {
     fontSize: FONTS.sizes.medium,
-    fontFamily: FONTS.medium,
+    lineHeight: 19,
+    fontFamily: FONTS.regular,
     color: COLORS.text.primary,
-    marginBottom: 4
+    marginTop: 2
   },
-  itemPriceContainer: {
+  priceRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4
+    marginTop: 4
   },
-  itemPrice: {
+  oldPrice: {
     fontSize: FONTS.sizes.large,
-    fontFamily: FONTS.bold,
-    color: COLORS.primary,
-    marginRight: SIZES.small
-  },
-  itemOriginalPrice: {
-    fontSize: FONTS.sizes.small,
     fontFamily: FONTS.regular,
     color: COLORS.text.hint,
-    textDecorationLine: 'line-through'
+    textDecorationLine: 'line-through',
+    marginRight: SIZES.small
   },
-  itemRating: {
+  currentPrice: {
+    fontSize: 34,
+    lineHeight: 36,
+    fontFamily: FONTS.bold,
+    color: COLORS.text.primary
+  },
+  bottomMetaRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SIZES.small
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
-  ratingText: {
-    marginLeft: 4,
-    fontSize: FONTS.sizes.small,
-    fontFamily: FONTS.regular,
-    color: COLORS.text.secondary
-  },
-  itemActions: {
+  optionChipsRow: {
     flexDirection: 'row',
     alignItems: 'center'
   },
-  addToCartButton: {
-    flex: 1,
-    backgroundColor: COLORS.primary,
-    paddingVertical: SIZES.small,
-    borderRadius: SIZES.radius.medium,
+  optionChip: {
+    minWidth: 62,
+    height: 34,
+    borderRadius: SIZES.radius.small,
+    backgroundColor: COLORS.primaryLight,
     alignItems: 'center',
+    justifyContent: 'center',
     marginRight: SIZES.small
   },
-  addToCartText: {
-    color: COLORS.white,
-    fontSize: FONTS.sizes.small,
-    fontFamily: FONTS.medium
+  optionChipText: {
+    fontSize: FONTS.sizes.large,
+    fontFamily: FONTS.medium,
+    color: COLORS.text.primary
   },
-  removeButton: {
-    padding: SIZES.small
+  cartActionButton: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative'
+  },
+  plusDot: {
+    position: 'absolute',
+    right: -2,
+    top: 0,
+    width: 13,
+    height: 13,
+    borderRadius: 7,
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   emptyContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: SIZES.xxlarge
+    paddingHorizontal: SIZES.xlarge
   },
   emptyTitle: {
+    marginTop: SIZES.large,
+    marginBottom: SIZES.small,
     fontSize: FONTS.sizes.xlarge,
     fontFamily: FONTS.bold,
-    color: COLORS.text.primary,
-    marginTop: SIZES.large,
-    marginBottom: SIZES.small
+    color: COLORS.text.primary
   },
   emptyText: {
     fontSize: FONTS.sizes.medium,
     fontFamily: FONTS.regular,
     color: COLORS.text.secondary,
     textAlign: 'center',
-    marginBottom: SIZES.xxlarge
+    marginBottom: SIZES.large
   },
   exploreButton: {
     width: '100%'
