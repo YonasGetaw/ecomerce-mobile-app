@@ -7,8 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  StatusBar,
-  Alert
+  StatusBar
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import PrimaryButton from '../../components/buttons/PrimaryButton';
@@ -32,17 +31,8 @@ export default function CartScreen({ navigation }) {
 
   const formatPrice = (value) => `$${Number(value || 0).toFixed(2).replace('.', ',')}`;
 
-  const handleRemoveFromCart = (item) => {
-    Alert.alert('Remove Item', 'Are you sure you want to remove this item?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Remove',
-        style: 'destructive',
-        onPress: async () => {
-          await removeFromCart(item.id, item.selectedSize, item.selectedColor);
-        }
-      }
-    ]);
+  const handleRemoveFromCart = async (item) => {
+    await removeFromCart(item.id, item.selectedSize ?? null, item.selectedColor ?? null);
   };
 
   const handleQuantityChange = async (item, direction) => {
@@ -111,6 +101,7 @@ export default function CartScreen({ navigation }) {
 
               <TouchableOpacity
                 style={styles.deleteCircle}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 onPress={() => handleRemoveFromCart(item)}
               >
                 <Icon name="trash-2" size={14} color={COLORS.error} />
@@ -305,7 +296,9 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     backgroundColor: COLORS.white,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    zIndex: 5,
+    elevation: 5
   },
   itemInfoWrap: {
     flex: 1,

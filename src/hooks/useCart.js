@@ -85,13 +85,31 @@ export const useCart = () => {
     const normalizedSize = normalizeVariant(size);
     const normalizedColor = normalizeVariant(color);
 
-    const newCart = cartItems.filter(
-      item => !(
-        item.id === itemId &&
-        normalizeVariant(item.selectedSize) === normalizedSize &&
-        normalizeVariant(item.selectedColor) === normalizedColor
-      )
+    const exactMatchExists = cartItems.some(
+      item => item.id === itemId &&
+      normalizeVariant(item.selectedSize) === normalizedSize &&
+      normalizeVariant(item.selectedColor) === normalizedColor
     );
+
+    const newCart = exactMatchExists
+      ? cartItems.filter(
+          item => !(
+            item.id === itemId &&
+            normalizeVariant(item.selectedSize) === normalizedSize &&
+            normalizeVariant(item.selectedColor) === normalizedColor
+          )
+        )
+      : (() => {
+          let removed = false;
+          return cartItems.filter((item) => {
+            if (!removed && item.id === itemId) {
+              removed = true;
+              return false;
+            }
+            return true;
+          });
+        })();
+
     setCartItems(newCart);
     await StorageService.saveCart(newCart);
   };
