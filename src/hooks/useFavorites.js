@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import StorageService from '../utils/Storage';
+import StorageService, { StorageKeys } from '../utils/Storage';
 
 export const useFavorites = () => {
   const [favorites, setFavorites] = useState([]);
@@ -22,8 +22,8 @@ export const useFavorites = () => {
     return isAdded;
   };
 
-  const isFavorite = async (productId) => {
-    return await StorageService.isFavorite(productId);
+  const isFavorite = (productId) => {
+    return favorites.some(item => item.id === productId);
   };
 
   const removeFromFavorites = async (productId) => {

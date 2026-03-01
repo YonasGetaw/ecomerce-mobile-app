@@ -12,10 +12,11 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
-import { PRODUCTS } from '../../data/MockData';
+import PrimaryButton from '../../components/buttons/PrimaryButton';
+import { useFavoritesContext } from '../../Context/FavoritesContext';
 
 export default function FavoritesScreen({ navigation }) {
-  const [favorites, setFavorites] = useState(PRODUCTS.slice(0, 5));
+  const { favorites, removeFromFavorites } = useFavoritesContext();
   const [selectedItems, setSelectedItems] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -28,8 +29,8 @@ export default function FavoritesScreen({ navigation }) {
         {
           text: 'Remove',
           style: 'destructive',
-          onPress: () => {
-            setFavorites(prev => prev.filter(i => i.id !== item.id));
+          onPress: async () => {
+            await removeFromFavorites(item.id);
             setSelectedItems(prev => prev.filter(id => id !== item.id));
           }
         }
@@ -83,8 +84,8 @@ export default function FavoritesScreen({ navigation }) {
         {
           text: 'Remove',
           style: 'destructive',
-          onPress: () => {
-            setFavorites(prev => prev.filter(item => !selectedItems.includes(item.id)));
+          onPress: async () => {
+            await Promise.all(selectedItems.map((itemId) => removeFromFavorites(itemId)));
             setSelectedItems([]);
             setIsEditing(false);
           }

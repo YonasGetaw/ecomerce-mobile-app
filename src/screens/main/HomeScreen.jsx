@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -16,15 +16,18 @@ import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import ProductCard from '../../components/Cards/ProductCard';
 import { PRODUCTS, FLASH_SALE_ITEMS } from '../../data/MockData';
+import { useFavoritesContext } from '../../Context/FavoritesContext';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function HomeScreen({ navigation }) {
+  const { toggleFavorite, isFavorite } = useFavoritesContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchHistory, setShowSearchHistory] = useState(false);
   const [searchHistory, setSearchHistory] = useState(['Dresses', 'Jeans', 'T-Shirts']);
   const [recommendations] = useState(['Skirt', 'Accessories', 'Black T-Shirt', 'Jeans', 'White Shoes']);
   const [activePromoIndex, setActivePromoIndex] = useState(0);
+  const [flashSaleSeconds, setFlashSaleSeconds] = useState((36 * 60) + 58);
 
   const sampleProductImages = [
     'https://loremflickr.com/700/700/fashion,shopping?lock=101',
@@ -167,6 +170,23 @@ export default function HomeScreen({ navigation }) {
 
   const handleDeleteHistoryItem = (item) => {
     setSearchHistory(searchHistory.filter(i => i !== item));
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFlashSaleSeconds((prevSeconds) => (prevSeconds > 0 ? prevSeconds - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatTwoDigits = (value) => String(value).padStart(2, '0');
+  const flashHours = Math.floor(flashSaleSeconds / 3600);
+  const flashMinutes = Math.floor((flashSaleSeconds % 3600) / 60);
+  const flashSecs = flashSaleSeconds % 60;
+
+  const handleToggleFavorite = async (product) => {
+    await toggleFavorite(product);
   };
 
   const renderHeader = () => (
@@ -349,7 +369,7 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>New Items</Text>
-              <TouchableOpacity style={styles.seeAllButton}>
+              <TouchableOpacity style={styles.seeAllButton} onPress={() => navigation.navigate('ProductSearch')}>
                 <Text style={styles.seeAllText}>See All</Text>
                 <View style={styles.arrowIcon}>
                   <Icon name="arrow-right" size={12} color={COLORS.white} />
@@ -366,6 +386,8 @@ export default function HomeScreen({ navigation }) {
                 <ProductCard 
                   product={item} 
                   hideTypeAndDiscount
+                  isFavorite={isFavorite(item.id)}
+                  onFavoritePress={() => handleToggleFavorite(item)}
                   onPress={() => navigation.navigate('ProductDetail', { product: item })}
                 />
               )}
@@ -378,9 +400,9 @@ export default function HomeScreen({ navigation }) {
               <Text style={styles.sectionTitle}>Flash Sale</Text>
               <View style={styles.flashTimerContainer}>
                 <Icon name="clock" size={18} color={COLORS.primary} />
-                <View style={styles.timerChip}><Text style={styles.timerChipText}>00</Text></View>
-                <View style={styles.timerChip}><Text style={styles.timerChipText}>36</Text></View>
-                <View style={styles.timerChip}><Text style={styles.timerChipText}>58</Text></View>
+                <View style={styles.timerChip}><Text style={styles.timerChipText}>{formatTwoDigits(flashHours)}</Text></View>
+                <View style={styles.timerChip}><Text style={styles.timerChipText}>{formatTwoDigits(flashMinutes)}</Text></View>
+                <View style={styles.timerChip}><Text style={styles.timerChipText}>{formatTwoDigits(flashSecs)}</Text></View>
               </View>
             </View>
 
@@ -421,6 +443,8 @@ export default function HomeScreen({ navigation }) {
               renderItem={({ item }) => (
                 <ProductCard 
                   product={item} 
+                  isFavorite={isFavorite(item.id)}
+                  onFavoritePress={() => handleToggleFavorite(item)}
                   onPress={() => navigation.navigate('ProductDetail', { product: item })}
                 />
               )}

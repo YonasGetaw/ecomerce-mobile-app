@@ -59,7 +59,7 @@ export default function ProductCard({
         )}
         <TouchableOpacity
           style={styles.favoriteButton}
-          onPress={() => onFavoritePress(id)}
+          onPress={() => onFavoritePress && onFavoritePress(id)}
         >
           <Icon
             name={isFavorite ? 'heart' : 'heart'}
