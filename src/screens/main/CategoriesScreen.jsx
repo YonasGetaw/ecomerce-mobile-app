@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -7,164 +7,124 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  FlatList,
   StatusBar
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
-import { CATEGORIES, PRODUCTS } from '../../data/MockData';
+
+const TABS = ['All', 'Female', 'Male'];
+
+const CATEGORY_IMAGES = {
+  Clothing: 'https://loremflickr.com/120/120/fashion,dress?lock=901',
+  Shoes: 'https://loremflickr.com/120/120/shoes,sneakers?lock=902',
+  Bags: 'https://loremflickr.com/120/120/bag,handbag?lock=903',
+  Lingerie: 'https://loremflickr.com/120/120/lingerie,women?lock=904',
+  Accessories: 'https://loremflickr.com/120/120/accessories,fashion?lock=905',
+  'Just for You': 'https://loremflickr.com/120/120/model,woman?lock=906'
+};
+
+const FEMALE_SUBCATEGORIES = ['Dresses', 'Pants', 'Skirts', 'Shorts', 'Jackets', 'Hoodies', 'Shirts', 'Polo', 'T-Shirts', 'Tunics'];
+const MALE_SUBCATEGORIES = ['Shirts', 'Pants', 'Polos', 'Shorts', 'Jackets', 'Hoodies', 'Jeans', 'Tracks', 'T-Shirts', 'Suits'];
+const ALL_SUBCATEGORIES = ['Dresses', 'Pants', 'Skirts', 'Shorts', 'Jackets', 'Hoodies', 'Shirts', 'Polo', 'T-Shirts', 'Tunics'];
 
 export default function CategoriesScreen({ navigation }) {
-  const [selectedTab, setSelectedTab] = useState('All');
-  const [selectedGender, setSelectedGender] = useState('All');
-  const [expandedCategory, setExpandedCategory] = useState(null);
+  const [selectedTab, setSelectedTab] = useState('Female');
+  const [expandedCategory, setExpandedCategory] = useState('Clothing');
 
-  const tabs = ['All', 'Female', 'Male'];
+  const clothingItems = useMemo(() => {
+    if (selectedTab === 'Male') return MALE_SUBCATEGORIES;
+    if (selectedTab === 'All') return ALL_SUBCATEGORIES;
+    return FEMALE_SUBCATEGORIES;
+  }, [selectedTab]);
 
-  const femaleSubcategories = {
-    Clothing: ['Dresses', 'Pants', 'Shirts', 'Jackets', 'Hoodies', 'T-shirts', 'Polo', 'Tunics'],
-    Shoes: ['Heels', 'Flats', 'Boots', 'Sandals'],
-    Accessories: ['Bags', 'Jewelry', 'Watches', 'Scarves']
+  const categories = useMemo(
+    () => [
+      { id: '1', name: 'Clothing', expandable: true },
+      { id: '2', name: 'Shoes', expandable: true },
+      { id: '3', name: 'Bags', expandable: true },
+      { id: '4', name: 'Lingerie', expandable: true },
+      { id: '5', name: 'Accessories', expandable: true },
+      { id: '6', name: 'Just for You', expandable: false }
+    ],
+    []
+  );
+
+  const handleTabPress = (tab) => {
+    setSelectedTab(tab);
+    setExpandedCategory('Clothing');
   };
 
-  const maleSubcategories = {
-    Clothing: ['Shirts', 'Pants', 'Jackets', 'Hoodies', 'T-shirts', 'Polo'],
-    Shoes: ['Sneakers', 'Formal', 'Boots', 'Sandals'],
-    Accessories: ['Watches', 'Belts', 'Bags', 'Hats']
-  };
-
-  const allCategories = [
-    { id: '1', name: 'Shoes', icon: 'trending-up', count: 245 },
-    { id: '2', name: 'Bags', icon: 'briefcase', count: 189 },
-    { id: '3', name: 'Lingerie', icon: 'heart', count: 156 },
-    { id: '4', name: 'Accessories', icon: 'watch', count: 98 },
-    { id: '5', name: 'Just for You', icon: 'star', count: 134 }
-  ];
-
-  const handleCategoryPress = (category) => {
-    if (selectedGender !== 'All') {
-      setExpandedCategory(expandedCategory === category ? null : category);
-    } else {
-      // Navigate to category products
-      navigation.navigate('ProductSearch', { category });
+  const handleCategoryPress = (categoryName) => {
+    if (categoryName === 'Just for You') {
+      navigation.navigate('ProductSearch', { query: 'Recommended' });
+      return;
     }
+
+    setExpandedCategory((prev) => (prev === categoryName ? null : categoryName));
   };
 
-  const renderSubcategories = (category, subcategories) => {
-    if (expandedCategory !== category) return null;
+  const renderClothingGrid = () => {
+    if (expandedCategory !== 'Clothing') return null;
 
     return (
-      <View style={styles.subcategoryContainer}>
-        {subcategories.map((subcat, index) => (
+      <View style={styles.subcategoryGrid}>
+        {clothingItems.map((item) => (
           <TouchableOpacity
-            key={index}
-            style={styles.subcategoryItem}
-            onPress={() => navigation.navigate('ProductSearch', { category: subcat })}
+            key={item}
+            style={styles.subcategoryChip}
+            onPress={() => navigation.navigate('ProductSearch', { category: item })}
+            activeOpacity={0.85}
           >
-            <Text style={styles.subcategoryText}>{subcat}</Text>
-            <Icon name="chevron-right" size={16} color={COLORS.text.secondary} />
+            <Text style={styles.subcategoryChipText}>{item}</Text>
           </TouchableOpacity>
         ))}
       </View>
     );
   };
 
-  const renderGenderContent = () => {
-    if (selectedGender === 'Female') {
-      return (
-        <>
-          {Object.entries(femaleSubcategories).map(([category, items]) => (
-            <View key={category}>
-              <TouchableOpacity
-                style={styles.categoryItem}
-                onPress={() => handleCategoryPress(category)}
-              >
-                <Text style={styles.categoryName}>{category}</Text>
-                <Icon 
-                  name={expandedCategory === category ? 'chevron-up' : 'chevron-down'} 
-                  size={20} 
-                  color={COLORS.text.secondary} 
-                />
-              </TouchableOpacity>
-              {renderSubcategories(category, items)}
-            </View>
-          ))}
-        </>
-      );
-    }
+  const renderCategoryRow = (item) => {
+    const isExpanded = expandedCategory === item.name;
+    const isJustForYou = item.name === 'Just for You';
 
-    if (selectedGender === 'Male') {
-      return (
-        <>
-          {Object.entries(maleSubcategories).map(([category, items]) => (
-            <View key={category}>
-              <TouchableOpacity
-                style={styles.categoryItem}
-                onPress={() => handleCategoryPress(category)}
-              >
-                <Text style={styles.categoryName}>{category}</Text>
-                <Icon 
-                  name={expandedCategory === category ? 'chevron-up' : 'chevron-down'} 
-                  size={20} 
-                  color={COLORS.text.secondary} 
-                />
-              </TouchableOpacity>
-              {renderSubcategories(category, items)}
-            </View>
-          ))}
-        </>
-      );
-    }
-
-    // All Categories
     return (
-      <>
-        {allCategories.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            style={styles.categoryItem}
-            onPress={() => navigation.navigate('ProductSearch', { category: item.name })}
-          >
-            <View style={styles.categoryIcon}>
-              <Icon name={item.icon} size={24} color={COLORS.primary} />
-            </View>
-            <View style={styles.categoryInfo}>
-              <Text style={styles.categoryName}>{item.name}</Text>
-              <Text style={styles.categoryCount}>{item.count} items</Text>
-            </View>
-            <Icon name="chevron-right" size={20} color={COLORS.text.secondary} />
-          </TouchableOpacity>
-        ))}
+      <View key={item.id} style={styles.categoryBlock}>
+        <TouchableOpacity
+          style={styles.categoryRow}
+          onPress={() => handleCategoryPress(item.name)}
+          activeOpacity={0.9}
+        >
+          <Image source={{ uri: CATEGORY_IMAGES[item.name] }} style={styles.categoryThumb} />
+          <View style={styles.categoryTextWrap}>
+            <Text style={styles.categoryTitle}>{item.name}</Text>
+            {isJustForYou && <Icon name="star" size={12} color={COLORS.primary} style={styles.justForYouStar} />}
+          </View>
 
-        {/* Just for You Products */}
-        <View style={styles.justForYouSection}>
-          <Text style={styles.sectionTitle}>Just for You</Text>
-          <FlatList
-            data={PRODUCTS.slice(0, 4)}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.productCard}
-                onPress={() => navigation.navigate('ProductDetail', { product: item })}
-              >
-                <Image source={{ uri: item.image }} style={styles.productImage} />
-                <Text style={styles.productName} numberOfLines={2}>{item.name}</Text>
-                <Text style={styles.productPrice}>${item.price}</Text>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-      </>
+          {isJustForYou ? (
+            <View style={styles.justForYouArrowWrap}>
+              <Icon name="arrow-right" size={16} color={COLORS.white} />
+            </View>
+          ) : (
+            <Icon
+              name={isExpanded ? 'chevron-up' : 'chevron-down'}
+              size={20}
+              color={COLORS.text.primary}
+            />
+          )}
+        </TouchableOpacity>
+
+        {item.name === 'Clothing' && renderClothingGrid()}
+      </View>
     );
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
-      
-      {/* Header */}
+
+      <View style={styles.screenLabelWrap}>
+        <Text style={styles.screenLabel}>27 Categories Filter</Text>
+      </View>
+
       <View style={styles.header}>
         <Text style={styles.headerTitle}>All Categories</Text>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -172,35 +132,27 @@ export default function CategoriesScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* Gender Tabs */}
-      <View style={styles.tabContainer}>
-        {tabs.map((tab) => (
-          <TouchableOpacity
-            key={tab}
-            style={[
-              styles.tab,
-              selectedTab === tab && styles.selectedTab
-            ]}
-            onPress={() => {
-              setSelectedTab(tab);
-              setSelectedGender(tab);
-              setExpandedCategory(null);
-            }}
-          >
-            <Text style={[
-              styles.tabText,
-              selectedTab === tab && styles.selectedTabText
-            ]}>
-              {tab}
-            </Text>
-          </TouchableOpacity>
-        ))}
+      <View style={styles.tabBarWrap}>
+        {TABS.map((tab) => {
+          const isActive = selectedTab === tab;
+          return (
+            <TouchableOpacity
+              key={tab}
+              style={[styles.tabButton, isActive && styles.activeTabButton]}
+              onPress={() => handleTabPress(tab)}
+              activeOpacity={0.9}
+            >
+              <Text style={[styles.tabButtonText, isActive && styles.activeTabButtonText]}>{tab}</Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.content}>
-          {renderGenderContent()}
-        </View>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {categories.map(renderCategoryRow)}
       </ScrollView>
     </SafeAreaView>
   );
@@ -211,124 +163,122 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white
   },
+  screenLabelWrap: {
+    paddingHorizontal: SIZES.medium,
+    paddingTop: SIZES.small
+  },
+  screenLabel: {
+    fontSize: FONTS.sizes.xxlarge,
+    fontFamily: FONTS.regular,
+    color: COLORS.text.hint
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: SIZES.medium,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border
+    paddingHorizontal: SIZES.medium,
+    paddingTop: SIZES.medium,
+    paddingBottom: SIZES.small
   },
   headerTitle: {
-    fontSize: FONTS.sizes.large,
+    fontSize: 40,
     fontFamily: FONTS.bold,
     color: COLORS.text.primary
   },
-  tabContainer: {
-    flexDirection: 'row',
-    padding: SIZES.small,
-    backgroundColor: COLORS.background,
+  tabBarWrap: {
     marginHorizontal: SIZES.medium,
-    marginVertical: SIZES.medium,
-    borderRadius: SIZES.radius.large
+    marginTop: SIZES.small,
+    marginBottom: SIZES.medium,
+    backgroundColor: COLORS.background,
+    borderRadius: SIZES.radius.medium,
+    padding: 4,
+    flexDirection: 'row'
   },
-  tab: {
+  tabButton: {
     flex: 1,
-    paddingVertical: SIZES.small,
-    alignItems: 'center',
-    borderRadius: SIZES.radius.medium
-  },
-  selectedTab: {
-    backgroundColor: COLORS.primary
-  },
-  tabText: {
-    fontSize: FONTS.sizes.medium,
-    fontFamily: FONTS.medium,
-    color: COLORS.text.secondary
-  },
-  selectedTabText: {
-    color: COLORS.white
-  },
-  content: {
-    padding: SIZES.medium
-  },
-  categoryItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: SIZES.medium,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border
-  },
-  categoryIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.primaryLight,
+    height: 46,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: SIZES.medium
+    borderRadius: SIZES.radius.medium
   },
-  categoryInfo: {
-    flex: 1
+  activeTabButton: {
+    backgroundColor: COLORS.primaryLight,
+    borderWidth: 1,
+    borderColor: COLORS.primary
   },
-  categoryName: {
+  tabButtonText: {
+    color: COLORS.text.primary,
+    fontSize: FONTS.sizes.large,
+    fontFamily: FONTS.medium
+  },
+  activeTabButtonText: {
+    color: COLORS.primary
+  },
+  scrollContent: {
+    paddingHorizontal: SIZES.medium,
+    paddingBottom: SIZES.xlarge
+  },
+  categoryBlock: {
+    marginBottom: SIZES.small
+  },
+  categoryRow: {
+    height: 66,
+    borderRadius: SIZES.radius.medium,
+    backgroundColor: COLORS.white,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SIZES.small
+  },
+  categoryThumb: {
+    width: 40,
+    height: 40,
+    borderRadius: SIZES.radius.small,
+    marginRight: SIZES.small
+  },
+  categoryTextWrap: {
     flex: 1,
-    fontSize: FONTS.sizes.medium,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  categoryTitle: {
+    fontSize: FONTS.sizes.xlarge,
+    fontFamily: FONTS.bold,
+    color: COLORS.text.primary
+  },
+  justForYouStar: {
+    marginLeft: 6
+  },
+  subcategoryGrid: {
+    marginTop: SIZES.small,
+    marginBottom: SIZES.small,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between'
+  },
+  subcategoryChip: {
+    width: '48.6%',
+    height: 54,
+    borderRadius: SIZES.radius.medium,
+    borderWidth: 1,
+    borderColor: COLORS.errorLight,
+    backgroundColor: COLORS.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SIZES.small
+  },
+  subcategoryChipText: {
+    fontSize: FONTS.sizes.large,
     fontFamily: FONTS.medium,
     color: COLORS.text.primary
   },
-  categoryCount: {
-    fontSize: FONTS.sizes.small,
-    fontFamily: FONTS.regular,
-    color: COLORS.text.hint,
-    marginTop: 2
-  },
-  subcategoryContainer: {
-    marginLeft: SIZES.xxlarge,
-    marginBottom: SIZES.small
-  },
-  subcategoryItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  justForYouArrowWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: COLORS.primary,
     alignItems: 'center',
-    paddingVertical: SIZES.small,
-    paddingLeft: SIZES.medium,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border
-  },
-  subcategoryText: {
-    fontSize: FONTS.sizes.medium,
-    fontFamily: FONTS.regular,
-    color: COLORS.text.secondary
-  },
-  justForYouSection: {
-    marginTop: SIZES.xlarge
-  },
-  sectionTitle: {
-    fontSize: FONTS.sizes.large,
-    fontFamily: FONTS.bold,
-    color: COLORS.text.primary,
-    marginBottom: SIZES.medium
-  },
-  productCard: {
-    width: 140,
-    marginRight: SIZES.medium
-  },
-  productImage: {
-    width: '100%',
-    height: 140,
-    borderRadius: SIZES.radius.medium,
-    marginBottom: SIZES.small
-  },
-  productName: {
-    fontSize: FONTS.sizes.small,
-    fontFamily: FONTS.regular,
-    color: COLORS.text.primary,
-    marginBottom: 4
-  },
-  productPrice: {
-    fontSize: FONTS.sizes.medium,
-    fontFamily: FONTS.bold,
-    color: COLORS.primary
+    justifyContent: 'center'
   }
 });
