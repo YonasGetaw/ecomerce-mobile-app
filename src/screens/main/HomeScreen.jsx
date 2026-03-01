@@ -52,6 +52,8 @@ export default function HomeScreen({ navigation }) {
 
   const flashSaleDisplayItems = [...homeFlashSaleItems, ...homeFlashSaleItems].slice(0, 6);
   const justForYouItems = [...homeProducts, ...homeProducts].slice(0, 8);
+  const popularTypeLabels = ['New', 'Sale', 'Hot'];
+  const popularPriceText = '1780';
 
   const categories = [
     {
@@ -440,13 +442,32 @@ export default function HomeScreen({ navigation }) {
               horizontal
               showsHorizontalScrollIndicator={false}
               keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <ProductCard 
-                  product={item} 
-                  isFavorite={isFavorite(item.id)}
-                  onFavoritePress={() => handleToggleFavorite(item)}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity
+                  style={styles.mostPopularCard}
                   onPress={() => navigation.navigate('ProductDetail', { product: item })}
-                />
+                  activeOpacity={0.9}
+                >
+                  <View style={styles.mostPopularImageWrap}>
+                    <Image source={{ uri: item.image }} style={styles.mostPopularImage} />
+                  </View>
+
+                  <View style={styles.mostPopularMetaRow}>
+                    <Text style={styles.mostPopularPrice}>{popularPriceText}</Text>
+                    <TouchableOpacity
+                      style={styles.mostPopularHeartButton}
+                      onPress={() => handleToggleFavorite(item)}
+                    >
+                      <Icon
+                        name="heart"
+                        size={22}
+                        color={COLORS.primary}
+                        solid={isFavorite(item.id)}
+                      />
+                    </TouchableOpacity>
+                    <Text style={styles.mostPopularTypeText}>{popularTypeLabels[index % popularTypeLabels.length]}</Text>
+                  </View>
+                </TouchableOpacity>
               )}
             />
           </View>
@@ -774,6 +795,43 @@ const styles = StyleSheet.create({
   flashSaleGridImage: {
     width: '100%',
     height: '100%'
+  },
+  mostPopularCard: {
+    width: 228,
+    backgroundColor: '#F3F3F3',
+    borderRadius: SIZES.radius.xlarge,
+    marginRight: SIZES.medium,
+    padding: SIZES.small
+  },
+  mostPopularImageWrap: {
+    borderRadius: SIZES.radius.large,
+    overflow: 'hidden',
+    backgroundColor: COLORS.white
+  },
+  mostPopularImage: {
+    width: '100%',
+    height: 220
+  },
+  mostPopularMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: SIZES.small,
+    paddingHorizontal: SIZES.small
+  },
+  mostPopularPrice: {
+    fontSize: 44,
+    lineHeight: 46,
+    fontFamily: FONTS.bold,
+    color: COLORS.text.primary
+  },
+  mostPopularHeartButton: {
+    marginHorizontal: 4
+  },
+  mostPopularTypeText: {
+    fontSize: FONTS.sizes.xxxlarge,
+    fontFamily: FONTS.regular,
+    color: COLORS.text.primary
   },
   discountBadge: {
     position: 'absolute',
