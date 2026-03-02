@@ -84,8 +84,11 @@ export const AuthProvider = ({ children }) => {
 
   const updateUserProfile = async (updates) => {
     try {
-      const updatedUser = { ...user, ...updates };
-      await StorageService.setItem(StorageKeys.USER_DATA, updatedUser);
+      const updatedUser = { ...(user || {}), ...updates };
+      const saved = await StorageService.setItem(StorageKeys.USER_DATA, updatedUser);
+      if (!saved) {
+        return { success: false, error: 'Failed to save profile data' };
+      }
       setUser(updatedUser);
       return { success: true };
     } catch (error) {

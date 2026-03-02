@@ -7,6 +7,7 @@ import {
   StatusBar,
   TouchableOpacity,
   TextInput,
+  Alert,
   Image
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
