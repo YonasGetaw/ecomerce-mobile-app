@@ -29,7 +29,7 @@ export default function SettingsScreen({ navigation }) {
       <Text style={styles.screenTitle}>Settings</Text>
 
       <Text style={styles.sectionTitle}>Personal</Text>
-      <SettingRow title="Profile" onPress={() => {}} />
+      <SettingRow title="Profile" onPress={() => navigation.navigate('EditProfile')} />
       <SettingRow title="Shipping Address" onPress={() => {}} />
       <SettingRow title="Payment methods" onPress={() => {}} />
 

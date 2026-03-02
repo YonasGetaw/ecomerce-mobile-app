@@ -18,6 +18,7 @@ import { Camera } from 'expo-camera';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import { PRODUCTS, FLASH_SALE_ITEMS } from '../../data/MockData';
 import { useImagePicker } from '../../hooks/useImagePicker';
+import { useAuth } from '../../Context/AuthContext';
 
 const PROFILE_IMAGE_BLUR = 30;
 const PROFILE_IMAGE_OVERLAY = 'rgba(0,0,0,0.102)';
@@ -40,6 +41,7 @@ function BlurredImage({ source, style }) {
 }
 
 export default function ProfileScreen({ navigation }) {
+  const { user } = useAuth();
   const { pickFromCamera, pickFromGallery } = useImagePicker();
 
   const [avatarUri, setAvatarUri] = useState(SAMPLE_PROFILE_IMAGES[0]);
@@ -152,6 +154,12 @@ export default function ProfileScreen({ navigation }) {
     })),
     []
   );
+
+  useEffect(() => {
+    if (user?.avatar) {
+      setAvatarUri(user.avatar);
+    }
+  }, [user?.avatar]);
 
   useEffect(() => {
     const fetchPermission = async () => {
@@ -273,7 +281,7 @@ export default function ProfileScreen({ navigation }) {
           </View>
         </View>
 
-        <Text style={styles.greeting}>Hello, Romina!</Text>
+        <Text style={styles.greeting}>Hello, {user?.name || 'Romina'}!</Text>
 
         <TouchableOpacity style={styles.announcementCard}>
           <View>
