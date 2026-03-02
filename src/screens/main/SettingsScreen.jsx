@@ -58,7 +58,7 @@ export default function SettingsScreen({ navigation }) {
         value={language === 'am' ? t('amharic', 'Amharic') : t('english', 'English')}
         onPress={onPressLanguage}
       />
-      <SettingRow title={t('aboutSlada', 'About Slada')} onPress={() => {}} />
+      <SettingRow title={t('aboutSlada', 'About Slada')} onPress={() => navigation.navigate('AboutSlada')} />
 
       <TouchableOpacity style={styles.deleteWrap}>
         <Text style={styles.deleteText}>{t('deleteAccount', 'Delete My Account')}</Text>
