@@ -59,7 +59,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.white,
-    paddingHorizontal: SIZES.medium
+    paddingLeft: SIZES.large,
+    paddingRight: SIZES.medium
   },
   topBar: {
     marginTop: SIZES.small,
