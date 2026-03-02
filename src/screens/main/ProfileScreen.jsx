@@ -9,8 +9,8 @@ import {
   TouchableOpacity,
   FlatList,
   StatusBar,
-  Alert,
-  Modal
+  Modal,
+  Alert
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { Camera } from 'expo-camera';
@@ -21,131 +21,147 @@ import { useImagePicker } from '../../hooks/useImagePicker';
 export default function ProfileScreen({ navigation }) {
   const { pickFromCamera, pickFromGallery } = useImagePicker();
 
-  const [avatarUri, setAvatarUri] = useState('https://loremflickr.com/300/300/woman,portrait?lock=1201');
+  const [avatarUri, setAvatarUri] = useState('https://loremflickr.com/220/220/face,woman?lock=1901');
   const [scannerVisible, setScannerVisible] = useState(false);
   const [cameraPermission, setCameraPermission] = useState(null);
-  const [scanned, setScanned] = useState(false);
+  const [isScanned, setIsScanned] = useState(false);
 
-  const profileUser = {
-    name: 'Romina',
-    activity: 'My Activity'
-  };
-
-  const recentAvatars = [
-    'https://loremflickr.com/200/200/fashion,woman?lock=1202',
-    'https://loremflickr.com/200/200/style,girl?lock=1203',
-    'https://loremflickr.com/200/200/portrait,woman?lock=1204',
-    'https://loremflickr.com/200/200/face,model?lock=1205',
-    'https://loremflickr.com/200/200/photo,woman?lock=1206'
+  const recentViewed = [
+    'https://loremflickr.com/120/120/woman,style?lock=1910',
+    'https://loremflickr.com/120/120/fashion,girl?lock=1911',
+    'https://loremflickr.com/120/120/model,portrait?lock=1912',
+    'https://loremflickr.com/120/120/woman,casual?lock=1913',
+    'https://loremflickr.com/120/120/fashion,photo?lock=1914'
   ];
 
   const stories = [
-    { id: 's1', title: 'Live', image: 'https://loremflickr.com/300/360/woman,blue?lock=1210' },
-    { id: 's2', title: 'New', image: 'https://loremflickr.com/300/360/fashion,pink?lock=1211' },
-    { id: 's3', title: 'Best', image: 'https://loremflickr.com/300/360/model,dress?lock=1212' }
+    { id: '1', title: 'Live', image: 'https://loremflickr.com/300/500/shopping,woman?lock=1920' },
+    { id: '2', title: 'New', image: 'https://loremflickr.com/300/500/fashion,pink?lock=1921' },
+    { id: '3', title: 'Top', image: 'https://loremflickr.com/300/500/model,beauty?lock=1922' },
+    { id: '4', title: 'Hot', image: 'https://loremflickr.com/300/500/shop,bag?lock=1923' }
   ];
 
-  const categoryTiles = [
-    { id: 'c1', title: 'Clothing', image: 'https://loremflickr.com/260/200/clothes,fashion?lock=1215' },
-    { id: 'c2', title: 'Shoes', image: 'https://loremflickr.com/260/200/shoes,sneakers?lock=1216' },
-    { id: 'c3', title: 'Bags', image: 'https://loremflickr.com/260/200/bag,shopping?lock=1217' },
-    { id: 'c4', title: 'Lingerie', image: 'https://loremflickr.com/260/200/lingerie,woman?lock=1218' }
+  const productImages = [
+    'https://loremflickr.com/500/500/sunglasses,woman?lock=1930',
+    'https://loremflickr.com/500/500/woman,portrait?lock=1931',
+    'https://loremflickr.com/500/500/model,green-shirt?lock=1932',
+    'https://loremflickr.com/500/500/fashion,woman?lock=1933',
+    'https://loremflickr.com/500/500/shopper,bag?lock=1934',
+    'https://loremflickr.com/500/500/fashion,pink?lock=1935'
+  ];
+
+  const categories = [
+    {
+      id: '1',
+      title: 'Clothing',
+      count: 109,
+      images: [
+        'https://loremflickr.com/220/220/fashion,yellow?lock=1940',
+        'https://loremflickr.com/220/220/woman,sunglasses?lock=1941',
+        'https://loremflickr.com/220/220/model,pink?lock=1942',
+        'https://loremflickr.com/220/220/woman,shop?lock=1943'
+      ]
+    },
+    {
+      id: '2',
+      title: 'Shoes',
+      count: 530,
+      images: [
+        'https://loremflickr.com/220/220/sneakers,shoe?lock=1944',
+        'https://loremflickr.com/220/220/blue-shoes,product?lock=1945',
+        'https://loremflickr.com/220/220/sports-shoes?lock=1946',
+        'https://loremflickr.com/220/220/heels,shoe?lock=1947'
+      ]
+    },
+    {
+      id: '3',
+      title: 'Bags',
+      count: 87,
+      images: [
+        'https://loremflickr.com/220/220/bag,white?lock=1948',
+        'https://loremflickr.com/220/220/handbag,pink?lock=1949',
+        'https://loremflickr.com/220/220/leather-bag?lock=1950',
+        'https://loremflickr.com/220/220/travel-bag?lock=1951'
+      ]
+    },
+    {
+      id: '4',
+      title: 'Lingerie',
+      count: 218,
+      images: [
+        'https://loremflickr.com/220/220/woman,beach?lock=1952',
+        'https://loremflickr.com/220/220/fashion,woman?lock=1953',
+        'https://loremflickr.com/220/220/lingerie,style?lock=1954',
+        'https://loremflickr.com/220/220/model,portrait?lock=1955'
+      ]
+    }
   ];
 
   const topProducts = [
-    'https://loremflickr.com/160/160/watch,luxury?lock=1220',
-    'https://loremflickr.com/160/160/sunglasses,style?lock=1221',
-    'https://loremflickr.com/160/160/shoes,product?lock=1222',
-    'https://loremflickr.com/160/160/perfume,bottle?lock=1223',
-    'https://loremflickr.com/160/160/bag,accessory?lock=1224'
+    'https://loremflickr.com/140/140/bag,product?lock=1960',
+    'https://loremflickr.com/140/140/watch,product?lock=1961',
+    'https://loremflickr.com/140/140/tshirt,product?lock=1962',
+    'https://loremflickr.com/140/140/shoes,product?lock=1963',
+    'https://loremflickr.com/140/140/woman,profile?lock=1964'
   ];
 
-  const profileProducts = useMemo(
+  const homeProducts = useMemo(
     () => PRODUCTS.map((item, index) => ({
       ...item,
-      image: `https://loremflickr.com/500/500/fashion,product?lock=${1230 + index}`
+      image: productImages[index % productImages.length]
     })),
     []
   );
 
   useEffect(() => {
-    const requestPermission = async () => {
+    const fetchPermission = async () => {
       if (scannerVisible) {
         const { status } = await Camera.requestCameraPermissionsAsync();
         setCameraPermission(status === 'granted');
       }
     };
 
-    requestPermission();
+    fetchPermission();
   }, [scannerVisible]);
 
-  const openImagePicker = () => {
-    Alert.alert('Profile Image', 'Update your profile image', [
+  const onAvatarPress = () => {
+    Alert.alert('Profile Image', 'Select image source', [
       {
         text: 'Take Photo',
         onPress: async () => {
-          const result = await pickFromCamera();
-          if (result?.uri) setAvatarUri(result.uri);
+          const image = await pickFromCamera();
+          if (image?.uri) setAvatarUri(image.uri);
         }
       },
       {
         text: 'Choose from Gallery',
         onPress: async () => {
-          const result = await pickFromGallery();
-          if (result?.uri) setAvatarUri(result.uri);
+          const image = await pickFromGallery();
+          if (image?.uri) setAvatarUri(image.uri);
         }
       },
       { text: 'Cancel', style: 'cancel' }
     ]);
   };
 
-  const handleScanResult = ({ data }) => {
-    if (!scanned) {
-      setScanned(true);
+  const handleScanned = ({ data }) => {
+    if (!isScanned) {
+      setIsScanned(true);
       setScannerVisible(false);
-      Alert.alert('QR Scanned', data || 'QR code scanned successfully.');
-      setTimeout(() => setScanned(false), 400);
+      Alert.alert('QR Scanned', data || 'Scan completed successfully.');
+      setTimeout(() => setIsScanned(false), 500);
     }
   };
-
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <View style={styles.headerLeft}>
-        <TouchableOpacity onPress={openImagePicker} activeOpacity={0.85}>
-          <Image source={{ uri: avatarUri }} style={styles.avatar} />
-          <View style={styles.avatarEditDot}>
-            <Icon name="camera" size={10} color={COLORS.white} />
-          </View>
-        </TouchableOpacity>
-
-        <View style={styles.activityPill}>
-          <Text style={styles.activityPillText}>{profileUser.activity}</Text>
-        </View>
-      </View>
-
-      <View style={styles.headerIcons}>
-        <TouchableOpacity style={styles.iconBtn} onPress={() => setScannerVisible(true)}>
-          <Icon name="maximize" size={18} color={COLORS.primary} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconBtn}>
-          <Icon name="bell" size={18} color={COLORS.text.primary} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconBtn}>
-          <Icon name="menu" size={18} color={COLORS.text.primary} />
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
 
   const renderSectionHeader = (title, onSeeAll) => (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{title}</Text>
-      <TouchableOpacity style={styles.seeAllWrap} onPress={onSeeAll}>
-        <Text style={styles.seeAllText}>See All</Text>
-        <View style={styles.smallArrowCircle}>
-          <Icon name="arrow-right" size={11} color={COLORS.white} />
-        </View>
-      </TouchableOpacity>
+      {onSeeAll ? (
+        <TouchableOpacity style={styles.seeAllWrap} onPress={onSeeAll}>
+          <Text style={styles.seeAllText}>See All</Text>
+          <View style={styles.arrowCircle}><Icon name="arrow-right" size={10} color={COLORS.white} /></View>
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
 
@@ -153,24 +169,40 @@ export default function ProfileScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
 
-      {renderHeader()}
-
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.greetingText}>Hello, {profileUser.name}!</Text>
-
-        <TouchableOpacity style={styles.announcementRow}>
-          <Text style={styles.announcementText}>Announcement</Text>
-          <View style={styles.smallArrowCircle}>
-            <Icon name="arrow-right" size={11} color={COLORS.white} />
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        <View style={styles.topRow}>
+          <View style={styles.leftTopRow}>
+            <TouchableOpacity onPress={onAvatarPress} style={styles.avatarWrap}>
+              <Image source={{ uri: avatarUri }} style={styles.avatar} />
+            </TouchableOpacity>
+            <View style={styles.activityBadge}><Text style={styles.activityText}>My Activity</Text></View>
           </View>
+
+          <View style={styles.rightTopRow}>
+            <TouchableOpacity style={styles.iconButton} onPress={() => setScannerVisible(true)}>
+              <Icon name="maximize" size={16} color={COLORS.primary} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton}><Icon name="list" size={16} color={COLORS.primary} /></TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton}><Icon name="settings" size={16} color={COLORS.primary} /></TouchableOpacity>
+          </View>
+        </View>
+
+        <Text style={styles.greeting}>Hello, Romina!</Text>
+
+        <TouchableOpacity style={styles.announcementCard}>
+          <View>
+            <Text style={styles.announcementTitle}>Announcement</Text>
+            <Text style={styles.announcementSub}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas hendrerit luctus libero ac vulputate.</Text>
+          </View>
+          <View style={styles.arrowCircle}><Icon name="arrow-right" size={10} color={COLORS.white} /></View>
         </TouchableOpacity>
 
         <View style={styles.sectionBlock}>
           <Text style={styles.sectionTitle}>Recently viewed</Text>
           <FlatList
             horizontal
-            data={recentAvatars}
-            keyExtractor={(item, index) => `recent-avatar-${index}`}
+            data={recentViewed}
+            keyExtractor={(item, idx) => `recent-${idx}`}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => <Image source={{ uri: item }} style={styles.recentAvatar} />}
           />
@@ -178,11 +210,12 @@ export default function ProfileScreen({ navigation }) {
 
         <View style={styles.sectionBlock}>
           <Text style={styles.sectionTitle}>My Orders</Text>
-          <View style={styles.orderPillsRow}>
-            <TouchableOpacity style={styles.orderPill}><Text style={styles.orderPillText}>To Pay</Text></TouchableOpacity>
-            <TouchableOpacity style={styles.orderPill}><Text style={styles.orderPillText}>To Receive</Text></TouchableOpacity>
-            <TouchableOpacity style={styles.orderPill}><Text style={styles.orderPillText}>To Review</Text></TouchableOpacity>
+          <View style={styles.ordersRow}>
+            <TouchableOpacity style={styles.orderChip}><Text style={styles.orderChipText}>To Pay</Text></TouchableOpacity>
+            <TouchableOpacity style={styles.orderChip}><Text style={styles.orderChipText}>To Receive</Text></TouchableOpacity>
+            <TouchableOpacity style={styles.orderChip}><Text style={styles.orderChipText}>To Review</Text></TouchableOpacity>
           </View>
+          <View style={styles.orderDot} />
         </View>
 
         <View style={styles.sectionBlock}>
@@ -192,10 +225,13 @@ export default function ProfileScreen({ navigation }) {
             data={stories}
             keyExtractor={(item) => item.id}
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
               <TouchableOpacity style={styles.storyCard}>
                 <Image source={{ uri: item.image }} style={styles.storyImage} />
-                <Text style={styles.storyText}>{item.title}</Text>
+                {index === 0 && (
+                  <View style={styles.playCircle}><Icon name="play" size={14} color={COLORS.white} /></View>
+                )}
+                <View style={styles.storyBadge}><Text style={styles.storyBadgeText}>{item.title}</Text></View>
               </TouchableOpacity>
             )}
           />
@@ -205,16 +241,14 @@ export default function ProfileScreen({ navigation }) {
           {renderSectionHeader('New Items', () => navigation.navigate('Home', { screen: 'ProductSearch' }))}
           <FlatList
             horizontal
-            data={profileProducts.slice(0, 5)}
+            data={homeProducts.slice(0, 5)}
             keyExtractor={(item) => `new-${item.id}`}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.newItemCard}
-                onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}
-              >
+              <TouchableOpacity style={styles.newItemCard} onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}>
                 <Image source={{ uri: item.image }} style={styles.newItemImage} />
-                <Text style={styles.productPriceSmall}>${Number(item.price).toFixed(2)}</Text>
+                <Text style={styles.newItemDesc} numberOfLines={2}>Lorem ipsum dolor sit amet consectetur.</Text>
+                <Text style={styles.newItemPrice}>${Number(item.price).toFixed(2)}</Text>
               </TouchableOpacity>
             )}
           />
@@ -224,15 +258,16 @@ export default function ProfileScreen({ navigation }) {
           {renderSectionHeader('Most Popular', () => navigation.navigate('Home', { screen: 'ProductSearch' }))}
           <FlatList
             horizontal
-            data={profileProducts.slice(0, 4)}
+            data={homeProducts.slice(0, 5)}
             keyExtractor={(item) => `popular-${item.id}`}
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
               <TouchableOpacity style={styles.popularCard} onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}>
                 <Image source={{ uri: item.image }} style={styles.popularImage} />
-                <View style={styles.popularMetaRow}>
-                  <Text style={styles.popularPrice}>1780</Text>
-                  <Icon name="heart" size={16} color={COLORS.primary} />
+                <View style={styles.popularBottom}>
+                  <Text style={styles.popularNumber}>1780</Text>
+                  <Icon name="heart" size={12} color={COLORS.primary} />
+                  <Text style={styles.popularType}>{['New', 'Sale', 'Hot'][index % 3]}</Text>
                 </View>
               </TouchableOpacity>
             )}
@@ -242,10 +277,17 @@ export default function ProfileScreen({ navigation }) {
         <View style={styles.sectionBlock}>
           {renderSectionHeader('Categories', () => navigation.navigate('Categories'))}
           <View style={styles.categoriesGrid}>
-            {categoryTiles.map((tile) => (
-              <TouchableOpacity key={tile.id} style={styles.categoryTile} onPress={() => navigation.navigate('Categories')}>
-                <Image source={{ uri: tile.image }} style={styles.categoryTileImage} />
-                <Text style={styles.categoryTileText}>{tile.title}</Text>
+            {categories.map((category) => (
+              <TouchableOpacity key={category.id} style={styles.categoryCard} onPress={() => navigation.navigate('Categories')}>
+                <View style={styles.categoryMosaic}>
+                  {category.images.map((imageUri, index) => (
+                    <Image key={`${category.id}-${index}`} source={{ uri: imageUri }} style={styles.mosaicImage} />
+                  ))}
+                </View>
+                <View style={styles.categoryFooter}>
+                  <Text style={styles.categoryName}>{category.title}</Text>
+                  <View style={styles.categoryCount}><Text style={styles.categoryCountText}>{category.count}</Text></View>
+                </View>
               </TouchableOpacity>
             ))}
           </View>
@@ -254,16 +296,18 @@ export default function ProfileScreen({ navigation }) {
         <View style={styles.sectionBlock}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Flash Sale</Text>
-            <View style={styles.flashTimerWrap}>
+            <View style={styles.flashTimerRow}>
               <Icon name="clock" size={12} color={COLORS.primary} />
-              <Text style={styles.flashTimerText}>00 24 58</Text>
+              <View style={styles.flashTimerChip}><Text style={styles.flashTimerChipText}>00</Text></View>
+              <View style={styles.flashTimerChip}><Text style={styles.flashTimerChipText}>36</Text></View>
+              <View style={styles.flashTimerChip}><Text style={styles.flashTimerChipText}>58</Text></View>
             </View>
           </View>
-
           <View style={styles.flashGrid}>
             {[...FLASH_SALE_ITEMS, ...FLASH_SALE_ITEMS].slice(0, 6).map((item, index) => (
               <TouchableOpacity key={`${item.id}-${index}`} style={styles.flashCard} onPress={() => navigation.navigate('Home', { screen: 'FlashSaleDetail' })}>
-                <Image source={{ uri: `https://loremflickr.com/280/280/fashion,sale?lock=${1260 + index}` }} style={styles.flashImage} />
+                <Image source={{ uri: `https://loremflickr.com/300/300/fashion,sale?lock=${1970 + index}` }} style={styles.flashImage} />
+                <View style={styles.flashDiscount}><Text style={styles.flashDiscountText}>-20%</Text></View>
               </TouchableOpacity>
             ))}
           </View>
@@ -274,29 +318,22 @@ export default function ProfileScreen({ navigation }) {
           <FlatList
             horizontal
             data={topProducts}
-            keyExtractor={(item, index) => `top-${index}`}
+            keyExtractor={(item, idx) => `top-${idx}`}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => <Image source={{ uri: item }} style={styles.topProductCircle} />}
           />
         </View>
 
         <View style={[styles.sectionBlock, styles.lastSection]}>
-          <View style={styles.sectionHeader}>
-            <View style={styles.justHeader}>
-              <Text style={styles.sectionTitle}>Just For You</Text>
-              <Icon name="star" size={12} color={COLORS.primary} />
-            </View>
+          <View style={styles.justHeaderRow}>
+            <Text style={styles.sectionTitle}>Just For You</Text>
+            <Icon name="star" size={12} color={COLORS.primary} />
           </View>
-
           <View style={styles.justGrid}>
-            {profileProducts.slice(0, 6).map((item, index) => (
-              <TouchableOpacity
-                key={`just-${item.id}-${index}`}
-                style={styles.justCard}
-                onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}
-              >
-                <Image source={{ uri: `https://loremflickr.com/420/420/fashion,woman?lock=${1280 + index}` }} style={styles.justImage} />
-                <Text style={styles.justDesc} numberOfLines={2}>Lorem ipsum dolor sit amet consectetur.</Text>
+            {homeProducts.slice(0, 6).map((item, index) => (
+              <TouchableOpacity key={`just-${item.id}-${index}`} style={styles.justCard} onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}>
+                <Image source={{ uri: `https://loremflickr.com/450/450/fashion,style?lock=${1980 + index}` }} style={styles.justImage} />
+                <Text style={styles.justDesc} numberOfLines={2}>Lorem ipsum dolor sit amet consectetur</Text>
                 <Text style={styles.justPrice}>$17,00</Text>
               </TouchableOpacity>
             ))}
@@ -330,10 +367,8 @@ export default function ProfileScreen({ navigation }) {
               <Camera
                 style={styles.scannerCamera}
                 type={Camera.Constants.Type.back}
-                onBarCodeScanned={scanned ? undefined : handleScanResult}
-                barCodeScannerSettings={{
-                  barCodeTypes: [Camera.Constants.BarCodeType.qr]
-                }}
+                onBarCodeScanned={isScanned ? undefined : handleScanned}
+                barCodeScannerSettings={{ barCodeTypes: [Camera.Constants.BarCodeType.qr] }}
               >
                 <View style={styles.scanOverlay}>
                   <View style={styles.scanFrame} />
@@ -353,87 +388,98 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background
   },
-  header: {
-    backgroundColor: COLORS.white,
+  scrollContent: {
     paddingHorizontal: SIZES.medium,
-    paddingTop: SIZES.small,
-    paddingBottom: SIZES.small,
+    paddingBottom: SIZES.xxlarge
+  },
+  topRow: {
+    marginTop: SIZES.small,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
   },
-  headerLeft: {
+  leftTopRow: {
     flexDirection: 'row',
     alignItems: 'center'
   },
-  avatar: {
-    width: 34,
-    height: 34,
-    borderRadius: 17
+  avatarWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: COLORS.border
   },
-  avatarEditDot: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    position: 'absolute',
-    right: -1,
-    bottom: -1,
+  avatar: {
+    width: '100%',
+    height: '100%'
+  },
+  activityBadge: {
+    marginLeft: SIZES.small,
     backgroundColor: COLORS.primary,
+    borderRadius: 16,
+    paddingHorizontal: 10,
+    height: 28,
     alignItems: 'center',
     justifyContent: 'center'
   },
-  activityPill: {
-    marginLeft: SIZES.small,
-    backgroundColor: COLORS.primary,
-    borderRadius: SIZES.radius.round,
-    paddingHorizontal: SIZES.small,
-    paddingVertical: 4
-  },
-  activityPillText: {
+  activityText: {
     color: COLORS.white,
-    fontFamily: FONTS.medium,
-    fontSize: 10
+    fontSize: 11,
+    fontFamily: FONTS.medium
   },
-  headerIcons: {
+  rightTopRow: {
     flexDirection: 'row',
     alignItems: 'center'
   },
-  iconBtn: {
-    marginLeft: SIZES.small
+  iconButton: {
+    marginLeft: SIZES.small,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#EEF2FB'
   },
-  scrollContent: {
-    paddingHorizontal: SIZES.medium,
-    paddingBottom: SIZES.large
-  },
-  greetingText: {
-    marginTop: SIZES.small,
-    fontSize: 32,
-    lineHeight: 34,
+  greeting: {
+    marginTop: SIZES.medium,
+    fontSize: 44,
+    lineHeight: 48,
     color: COLORS.text.primary,
     fontFamily: FONTS.bold
   },
-  announcementRow: {
+  announcementCard: {
     marginTop: SIZES.small,
-    marginBottom: SIZES.medium,
+    backgroundColor: '#F2F2F4',
+    borderRadius: SIZES.radius.medium,
+    padding: SIZES.small,
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
-  announcementText: {
+  announcementTitle: {
+    fontSize: 15,
+    fontFamily: FONTS.bold,
+    color: COLORS.text.primary,
+    marginBottom: 2
+  },
+  announcementSub: {
+    width: 220,
     fontSize: 10,
+    lineHeight: 13,
     color: COLORS.text.secondary,
     fontFamily: FONTS.regular
   },
-  smallArrowCircle: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+  arrowCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center'
   },
   sectionBlock: {
-    marginBottom: SIZES.medium
+    marginTop: SIZES.medium
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -442,131 +488,207 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.small
   },
   sectionTitle: {
-    fontSize: FONTS.sizes.large,
+    fontSize: 34,
+    lineHeight: 36,
     color: COLORS.text.primary,
-    fontFamily: FONTS.bold,
-    marginBottom: SIZES.small
+    fontFamily: FONTS.bold
   },
   seeAllWrap: {
     flexDirection: 'row',
     alignItems: 'center'
   },
   seeAllText: {
-    fontSize: 10,
-    color: COLORS.primary,
-    fontFamily: FONTS.medium,
-    marginRight: 4
+    marginRight: 6,
+    fontSize: 14,
+    color: COLORS.text.primary,
+    fontFamily: FONTS.medium
   },
   recentAvatar: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    marginRight: SIZES.small
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    marginRight: SIZES.small,
+    borderWidth: 1,
+    borderColor: COLORS.border
   },
-  orderPillsRow: {
+  ordersRow: {
     flexDirection: 'row',
     justifyContent: 'space-between'
   },
-  orderPill: {
-    flex: 1,
+  orderChip: {
+    width: '31.5%',
+    height: 30,
+    borderRadius: 15,
     backgroundColor: COLORS.primaryLight,
-    borderRadius: SIZES.radius.small,
     alignItems: 'center',
-    justifyContent: 'center',
-    height: 26,
-    marginRight: 6
+    justifyContent: 'center'
   },
-  orderPillText: {
-    fontSize: 10,
+  orderChipText: {
+    fontSize: 11,
     color: COLORS.primary,
     fontFamily: FONTS.medium
   },
+  orderDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#2EC845',
+    marginTop: -4,
+    marginLeft: '57%'
+  },
   storyCard: {
-    width: 76,
-    marginRight: SIZES.small
+    width: 78,
+    height: 122,
+    borderRadius: SIZES.radius.medium,
+    marginRight: SIZES.small,
+    overflow: 'hidden',
+    position: 'relative'
   },
   storyImage: {
-    width: 76,
-    height: 102,
-    borderRadius: SIZES.radius.small,
-    marginBottom: 3
+    width: '100%',
+    height: '100%'
   },
-  storyText: {
+  playCircle: {
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    marginLeft: -14,
+    marginTop: -14,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.35)',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  storyBadge: {
+    position: 'absolute',
+    left: 4,
+    top: 4,
+    backgroundColor: COLORS.success,
+    borderRadius: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 2
+  },
+  storyBadgeText: {
+    color: COLORS.white,
     fontSize: 10,
-    color: COLORS.text.primary,
-    fontFamily: FONTS.medium,
-    textAlign: 'center'
+    fontFamily: FONTS.bold
   },
   newItemCard: {
-    width: 60,
+    width: 86,
     marginRight: SIZES.small
   },
   newItemImage: {
-    width: 60,
-    height: 72,
-    borderRadius: SIZES.radius.small
+    width: '100%',
+    height: 86,
+    borderRadius: SIZES.radius.small,
+    marginBottom: 4
   },
-  productPriceSmall: {
-    marginTop: 4,
-    fontSize: 10,
+  newItemDesc: {
+    fontSize: 9,
+    lineHeight: 12,
+    color: COLORS.text.secondary,
+    fontFamily: FONTS.regular,
+    marginBottom: 3
+  },
+  newItemPrice: {
+    fontSize: 11,
     color: COLORS.text.primary,
-    fontFamily: FONTS.medium
+    fontFamily: FONTS.bold
   },
   popularCard: {
-    width: 70,
+    width: 78,
     marginRight: SIZES.small,
-    backgroundColor: '#F4F4F4',
     borderRadius: SIZES.radius.small,
+    backgroundColor: '#F5F5F6',
     padding: 4
   },
   popularImage: {
     width: '100%',
-    height: 62,
+    height: 60,
     borderRadius: SIZES.radius.small
   },
-  popularMetaRow: {
+  popularBottom: {
     marginTop: 4,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between'
   },
-  popularPrice: {
+  popularNumber: {
     fontSize: 10,
-    fontFamily: FONTS.bold,
-    color: COLORS.text.primary
+    color: COLORS.text.primary,
+    fontFamily: FONTS.bold
+  },
+  popularType: {
+    fontSize: 10,
+    color: COLORS.text.secondary,
+    fontFamily: FONTS.medium
   },
   categoriesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between'
   },
-  categoryTile: {
+  categoryCard: {
     width: '48.5%',
-    marginBottom: SIZES.small
-  },
-  categoryTileImage: {
-    width: '100%',
-    height: 74,
-    borderRadius: SIZES.radius.small
-  },
-  categoryTileText: {
-    marginTop: 2,
-    fontSize: 10,
-    fontFamily: FONTS.medium,
-    color: COLORS.text.primary
-  },
-  flashTimerWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.primaryLight,
     borderRadius: SIZES.radius.small,
-    paddingHorizontal: 6,
-    height: 20
+    backgroundColor: COLORS.white,
+    marginBottom: SIZES.small,
+    padding: 4
   },
-  flashTimerText: {
-    marginLeft: 4,
-    color: COLORS.primary,
+  categoryMosaic: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between'
+  },
+  mosaicImage: {
+    width: '49%',
+    aspectRatio: 1,
+    borderRadius: 6,
+    marginBottom: 4
+  },
+  categoryFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  categoryName: {
+    fontSize: 14,
+    color: COLORS.text.primary,
+    fontFamily: FONTS.bold
+  },
+  categoryCount: {
+    minWidth: 30,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: COLORS.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 6
+  },
+  categoryCountText: {
     fontSize: 10,
+    color: COLORS.text.primary,
+    fontFamily: FONTS.bold
+  },
+  flashTimerRow: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  flashTimerChip: {
+    minWidth: 22,
+    height: 18,
+    borderRadius: 4,
+    backgroundColor: COLORS.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 4,
+    paddingHorizontal: 4
+  },
+  flashTimerChipText: {
+    fontSize: 10,
+    color: COLORS.primary,
     fontFamily: FONTS.bold
   },
   flashGrid: {
@@ -577,27 +699,40 @@ const styles = StyleSheet.create({
   flashCard: {
     width: '32%',
     aspectRatio: 1,
-    marginBottom: 4,
     borderRadius: SIZES.radius.small,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    marginBottom: 4,
+    position: 'relative'
   },
   flashImage: {
     width: '100%',
     height: '100%'
   },
+  flashDiscount: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: COLORS.error,
+    borderBottomLeftRadius: 8,
+    paddingHorizontal: 5,
+    paddingVertical: 2
+  },
+  flashDiscountText: {
+    fontSize: 9,
+    color: COLORS.white,
+    fontFamily: FONTS.bold
+  },
   topProductCircle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    marginRight: 6
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: COLORS.border
   },
-  justHeader: {
+  justHeaderRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4
-  },
-  lastSection: {
-    marginBottom: SIZES.xxlarge
+    alignItems: 'center'
   },
   justGrid: {
     flexDirection: 'row',
@@ -610,21 +745,24 @@ const styles = StyleSheet.create({
   },
   justImage: {
     width: '100%',
-    height: 92,
+    height: 96,
     borderRadius: SIZES.radius.small,
-    marginBottom: 3
+    marginBottom: 4
   },
   justDesc: {
-    fontSize: 10,
-    fontFamily: FONTS.regular,
+    fontSize: 9,
+    lineHeight: 12,
     color: COLORS.text.secondary,
-    lineHeight: 13
+    fontFamily: FONTS.regular
   },
   justPrice: {
     marginTop: 3,
     fontSize: 10,
-    fontFamily: FONTS.bold,
-    color: COLORS.text.primary
+    color: COLORS.text.primary,
+    fontFamily: FONTS.bold
+  },
+  lastSection: {
+    marginBottom: SIZES.large
   },
   scannerContainer: {
     flex: 1,
