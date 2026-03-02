@@ -18,10 +18,10 @@ export default function AboutSladaScreen() {
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>{t('aboutShoppeTitle', 'About Shoppe')}</Text>
-        <Text style={styles.description}>{t('aboutShoppeDescription', 'Shoppe - Shopping UI kit is likely a user interface (UI) kit designed to facilitate the development of e-commerce or shopping-related applications. UI kits are collections of pre-designed elements, components, and templates that developers and designers can use to create consistent and visually appealing user interfaces.')}</Text>
+        <Text style={styles.title}>{t('aboutSlada')}</Text>
+        <Text style={styles.description}>{t('aboutSladaDescription', 'Shoppe - Shopping UI kit is likely a user interface (UI) kit designed to facilitate the development of e-commerce or shopping-related applications. UI kits are collections of pre-designed elements, components, and templates that developers and designers can use to create consistent and visually appealing user interfaces.')}</Text>
 
-        <Text style={styles.supportText}>{t('aboutShoppeSupport', 'If you need help or you have any questions, feel free to contact me by email.')}</Text>
+        <Text style={styles.supportText}>{t('aboutSladaSupport', 'If you need help or you have any questions, feel free to contact me by email.')}</Text>
         <Text style={styles.email}>hello@mydomain.com</Text>
       </View>
     </SafeAreaView>

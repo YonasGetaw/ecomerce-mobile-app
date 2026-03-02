@@ -109,7 +109,9 @@ const translations = {
     shopNow: 'Shop',
     aboutShoppeTitle: 'About Shoppe',
     aboutShoppeDescription: 'Shoppe - Shopping UI kit is likely a user interface (UI) kit designed to facilitate the development of e-commerce or shopping-related applications. UI kits are collections of pre-designed elements, components, and templates that developers and designers can use to create consistent and visually appealing user interfaces.',
-    aboutShoppeSupport: 'If you need help or you have any questions, feel free to contact me by email.'
+    aboutShoppeSupport: 'If you need help or you have any questions, feel free to contact me by email.',
+    aboutSladaDescription: 'Shoppe - Shopping UI kit is likely a user interface (UI) kit designed to facilitate the development of e-commerce or shopping-related applications. UI kits are collections of pre-designed elements, components, and templates that developers and designers can use to create consistent and visually appealing user interfaces.',
+    aboutSladaSupport: 'If you need help or you have any questions, feel free to contact me by email.'
   },
   am: {
     home: 'መነሻ',
@@ -215,7 +217,9 @@ const translations = {
     shopNow: 'ግዛ',
     aboutShoppeTitle: 'ስለ ሾፔ',
     aboutShoppeDescription: '"Shoppe - Shopping UI kit" የኢ-ኮሜርስ ወይም የግዢ መተግበሪያዎችን ለማበልጸግ የተዘጋጀ የተጠቃሚ መገናኛ (UI) ኪት ነው። UI ኪቶች አስቀድሞ የተዘጋጁ ንጥሎች፣ ኮምፖነንቶች እና አብነቶች ስብስብ ሲሆኑ አብራሪዎች እና ዲዛይነሮች ተመሳሳይ እና የሚስቡ የተጠቃሚ ቅጾችን ለመፍጠር ይጠቀሙባቸዋል።',
-    aboutShoppeSupport: 'እርዳታ ከፈለጉ ወይም ጥያቄ ካለዎት በኢሜይል እባክዎ ያግኙኝ።'
+    aboutShoppeSupport: 'እርዳታ ከፈለጉ ወይም ጥያቄ ካለዎት በኢሜይል እባክዎ ያግኙኝ።',
+    aboutSladaDescription: '"Shoppe - Shopping UI kit" የኢ-ኮሜርስ ወይም የግዢ መተግበሪያዎችን ለማበልጸግ የተዘጋጀ የተጠቃሚ መገናኛ (UI) ኪት ነው። UI ኪቶች አስቀድሞ የተዘጋጁ ንጥሎች፣ ኮምፖነንቶች እና አብነቶች ስብስብ ሲሆኑ አብራሪዎች እና ዲዛይነሮች ተመሳሳይ እና የሚስቡ የተጠቃሚ ቅጾችን ለመፍጠር ይጠቀሙባቸዋል።',
+    aboutSladaSupport: 'እርዳታ ከፈለጉ ወይም ጥያቄ ካለዎት በኢሜይል እባክዎ ያግኙኝ።'
   }
 };
 
