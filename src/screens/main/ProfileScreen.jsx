@@ -633,9 +633,9 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.small
   },
   sectionTitle: {
-    fontSize: 28,
-    lineHeight: 30,
-    color: COLORS.text.primary,
+    fontSize: 24,
+    lineHeight: 26,
+    color: '#202020',
     fontFamily: FONTS.bold
   },
   seeAllWrap: {
@@ -655,9 +655,9 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   newItemsTitle: {
-    fontSize: 28,
-    lineHeight: 30,
-    color: COLORS.text.primary,
+    fontSize: 24,
+    lineHeight: 26,
+    color: '#202020',
     fontFamily: FONTS.bold
   },
   newItemsSeeAllWrap: {
