@@ -314,17 +314,24 @@ export default function ProfileScreen({ navigation }) {
         </View>
 
         <View style={styles.sectionBlock}>
-          {renderSectionHeader('New Items', () => navigation.navigate('Home', { screen: 'ProductSearch' }))}
+          <View style={styles.newItemsHeader}>
+            <Text style={styles.newItemsTitle}>New Items</Text>
+            <TouchableOpacity style={styles.newItemsSeeAllWrap} onPress={() => navigation.navigate('Home', { screen: 'ProductSearch' })}>
+              <Text style={styles.newItemsSeeAllText}>See All</Text>
+              <View style={styles.newItemsArrowCircle}><Icon name="arrow-right" size={12} color={COLORS.white} /></View>
+            </TouchableOpacity>
+          </View>
           <FlatList
             horizontal
             data={homeProducts.slice(0, 5)}
             keyExtractor={(item) => `new-${item.id}`}
             showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.newItemsListContent}
             renderItem={({ item }) => (
               <TouchableOpacity style={styles.newItemCard} onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}>
                 <Image source={{ uri: item.image }} style={styles.newItemImage} />
                 <Text style={styles.newItemDesc} numberOfLines={2}>Lorem ipsum dolor sit amet consectetur.</Text>
-                <Text style={styles.newItemPrice}>${Number(item.price).toFixed(2)}</Text>
+                <Text style={styles.newItemPrice}>${Number(item.price).toFixed(2).replace('.', ',')}</Text>
               </TouchableOpacity>
             )}
           />
@@ -641,6 +648,39 @@ const styles = StyleSheet.create({
     color: COLORS.text.primary,
     fontFamily: FONTS.medium
   },
+  newItemsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10
+  },
+  newItemsTitle: {
+    fontSize: 28,
+    lineHeight: 30,
+    color: COLORS.text.primary,
+    fontFamily: FONTS.bold
+  },
+  newItemsSeeAllWrap: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  newItemsSeeAllText: {
+    marginRight: 8,
+    fontSize: 14,
+    color: COLORS.text.primary,
+    fontFamily: FONTS.semiBold
+  },
+  newItemsArrowCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  newItemsListContent: {
+    paddingRight: 10
+  },
   recentAvatar: {
     width: 52,
     height: 52,
@@ -735,24 +775,25 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bold
   },
   newItemCard: {
-    width: 86,
-    marginRight: SIZES.small
+    width: 142,
+    marginRight: 12
   },
   newItemImage: {
     width: '100%',
-    height: 86,
-    borderRadius: SIZES.radius.small,
-    marginBottom: 4
+    height: 124,
+    borderRadius: 10,
+    marginBottom: 8,
+    backgroundColor: '#F1F1F1'
   },
   newItemDesc: {
-    fontSize: 9,
-    lineHeight: 12,
+    fontSize: 10,
+    lineHeight: 15,
     color: COLORS.text.secondary,
     fontFamily: FONTS.regular,
-    marginBottom: 3
+    marginBottom: 6
   },
   newItemPrice: {
-    fontSize: 11,
+    fontSize: 16,
     color: COLORS.text.primary,
     fontFamily: FONTS.bold
   },
