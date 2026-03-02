@@ -7,7 +7,6 @@ import {
   StatusBar,
   TouchableOpacity,
   TextInput,
-  Alert,
   Image
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
@@ -41,24 +40,11 @@ export default function EditProfileScreen({ navigation }) {
 
   const avatarSource = typeof avatar === 'string' ? { uri: avatar } : avatar;
 
-  const onPickPhoto = () => {
-    Alert.alert('Change Photo', 'Choose image source', [
-      {
-        text: 'Take Photo',
-        onPress: async () => {
-          const image = await pickFromCamera();
-          if (image?.uri) setAvatar(image.uri);
-        }
-      },
-      {
-        text: 'Choose from Gallery',
-        onPress: async () => {
-          const image = await pickFromGallery();
-          if (image?.uri) setAvatar(image.uri);
-        }
-      },
-      { text: 'Cancel', style: 'cancel' }
-    ]);
+  const onPickPhoto = async () => {
+    const image = await pickFromGallery();
+    if (image?.uri) {
+      setAvatar(image.uri);
+    }
   };
 
   const onSave = async () => {
@@ -99,7 +85,7 @@ export default function EditProfileScreen({ navigation }) {
       <Text style={styles.title}>Settings</Text>
       <Text style={styles.subtitle}>Your Profile</Text>
 
-      <View style={styles.avatarWrap}>
+      <View style={styles.avatarFrame}>
         <Image source={avatarSource} style={styles.avatar} />
         <TouchableOpacity style={styles.editDot} onPress={onPickPhoto}>
           <Icon name="edit-2" size={10} color={COLORS.white} />
@@ -144,11 +130,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.white,
-    paddingHorizontal: SIZES.medium
+    paddingHorizontal: 10
   },
   topBar: {
-    marginTop: SIZES.small,
-    marginBottom: 10
+    marginTop: 6,
+    marginBottom: 8
   },
   backButton: {
     width: 30,
@@ -158,37 +144,36 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   title: {
-    fontSize: 34,
-    lineHeight: 36,
+    fontSize: 38,
+    lineHeight: 40,
     fontFamily: FONTS.bold,
     color: '#202020'
   },
   subtitle: {
     marginTop: 4,
-    marginBottom: 12,
-    fontSize: 14,
+    marginBottom: 10,
+    fontSize: 12,
     color: '#202020',
     fontFamily: FONTS.medium
   },
-  avatarWrap: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    overflow: 'visible',
-    marginBottom: 16,
-    borderWidth: 3,
-    borderColor: '#D6F1EE',
-    justifyContent: 'center'
+  avatarFrame: {
+    width: 86,
+    height: 86,
+    borderWidth: 4,
+    borderColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10
   },
   avatar: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 44
+    width: 68,
+    height: 68,
+    borderRadius: 34
   },
   editDot: {
     position: 'absolute',
-    right: -2,
-    top: -2,
+    right: 4,
+    top: 4,
     width: 22,
     height: 22,
     borderRadius: 11,
@@ -211,10 +196,10 @@ const styles = StyleSheet.create({
   bottomBar: {
     flex: 1,
     justifyContent: 'flex-end',
-    paddingBottom: 10
+    paddingBottom: 8
   },
   saveButton: {
-    height: 40,
+    height: 38,
     borderRadius: 8,
     backgroundColor: COLORS.primary,
     alignItems: 'center',
