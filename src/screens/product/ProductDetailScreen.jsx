@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -34,12 +34,49 @@ export default function ProductDetailScreen({ navigation, route }) {
     { name: 'white', code: '#FFFFFF' }
   ];
 
-  const productImages = [
-    product.image,
-    'https://via.placeholder.com/300',
-    'https://via.placeholder.com/300',
-    'https://via.placeholder.com/300'
-  ];
+  const colorImageMap = {
+    pink: [
+      'https://loremflickr.com/700/700/fashion,pink?lock=811',
+      'https://loremflickr.com/700/700/women,pink-dress?lock=812',
+      'https://loremflickr.com/700/700/style,pink?lock=813',
+      'https://loremflickr.com/700/700/clothing,pink?lock=814'
+    ],
+    red: [
+      'https://loremflickr.com/700/700/fashion,red?lock=821',
+      'https://loremflickr.com/700/700/women,red-dress?lock=822',
+      'https://loremflickr.com/700/700/style,red?lock=823',
+      'https://loremflickr.com/700/700/clothing,red?lock=824'
+    ],
+    blue: [
+      'https://loremflickr.com/700/700/fashion,blue?lock=831',
+      'https://loremflickr.com/700/700/women,blue-dress?lock=832',
+      'https://loremflickr.com/700/700/style,blue?lock=833',
+      'https://loremflickr.com/700/700/clothing,blue?lock=834'
+    ],
+    black: [
+      'https://loremflickr.com/700/700/fashion,black?lock=841',
+      'https://loremflickr.com/700/700/women,black-dress?lock=842',
+      'https://loremflickr.com/700/700/style,black?lock=843',
+      'https://loremflickr.com/700/700/clothing,black?lock=844'
+    ],
+    white: [
+      'https://loremflickr.com/700/700/fashion,white?lock=851',
+      'https://loremflickr.com/700/700/women,white-dress?lock=852',
+      'https://loremflickr.com/700/700/style,white?lock=853',
+      'https://loremflickr.com/700/700/clothing,white?lock=854'
+    ]
+  };
+
+  const productImages = useMemo(() => {
+    const defaultImages = [
+      product.image,
+      'https://loremflickr.com/700/700/fashion,lookbook?lock=861',
+      'https://loremflickr.com/700/700/fashion,studio?lock=862',
+      'https://loremflickr.com/700/700/fashion,model?lock=863'
+    ];
+
+    return colorImageMap[selectedColor] || defaultImages;
+  }, [product.image, selectedColor]);
 
   const handleAddToCart = async () => {
     await addToCart(product, quantity, selectedSize, selectedColor);
@@ -91,6 +128,7 @@ export default function ProductDetailScreen({ navigation, route }) {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Product Images */}
         <FlatList
+          key={`images-${selectedColor}`}
           data={productImages}
           horizontal
           pagingEnabled
