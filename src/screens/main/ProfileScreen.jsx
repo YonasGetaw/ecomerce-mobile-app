@@ -21,14 +21,13 @@ import { useImagePicker } from '../../hooks/useImagePicker';
 
 const PROFILE_IMAGE_BLUR = 30;
 const PROFILE_IMAGE_OVERLAY = 'rgba(0,0,0,0.102)';
-const SAMPLE_IMAGE = 'https://picsum.photos/id/1027/600/600';
 const SAMPLE_PROFILE_IMAGES = [
-  'https://picsum.photos/id/1027/600/600',
-  'https://picsum.photos/id/1011/600/600',
-  'https://picsum.photos/id/1005/600/600',
-  'https://picsum.photos/id/1012/600/600',
-  'https://picsum.photos/id/1062/600/600',
-  'https://picsum.photos/id/1001/600/600'
+  require('../../../assets/images/sample/profile-1.jpg'),
+  require('../../../assets/images/sample/profile-2.jpg'),
+  require('../../../assets/images/sample/profile-3.jpg'),
+  require('../../../assets/images/sample/profile-4.jpg'),
+  require('../../../assets/images/sample/profile-5.jpg'),
+  require('../../../assets/images/sample/profile-6.jpg')
 ];
 
 function BlurredImage({ source, style }) {
@@ -43,7 +42,7 @@ function BlurredImage({ source, style }) {
 export default function ProfileScreen({ navigation }) {
   const { pickFromCamera, pickFromGallery } = useImagePicker();
 
-  const [avatarUri, setAvatarUri] = useState(SAMPLE_IMAGE);
+  const [avatarUri, setAvatarUri] = useState(SAMPLE_PROFILE_IMAGES[0]);
   const [scannerVisible, setScannerVisible] = useState(false);
   const [cameraPermission, setCameraPermission] = useState(null);
   const [isScanned, setIsScanned] = useState(false);
@@ -88,10 +87,10 @@ export default function ProfileScreen({ navigation }) {
       title: 'Clothing',
       count: 109,
       images: [
-        'https://loremflickr.com/220/220/fashion,yellow?lock=1940',
-        'https://loremflickr.com/220/220/woman,sunglasses?lock=1941',
-        'https://loremflickr.com/220/220/model,pink?lock=1942',
-        'https://loremflickr.com/220/220/woman,shop?lock=1943'
+        SAMPLE_PROFILE_IMAGES[0],
+        SAMPLE_PROFILE_IMAGES[1],
+        SAMPLE_PROFILE_IMAGES[2],
+        SAMPLE_PROFILE_IMAGES[3]
       ]
     },
     {
@@ -99,10 +98,10 @@ export default function ProfileScreen({ navigation }) {
       title: 'Shoes',
       count: 530,
       images: [
-        'https://loremflickr.com/220/220/sneakers,shoe?lock=1944',
-        'https://loremflickr.com/220/220/blue-shoes,product?lock=1945',
-        'https://loremflickr.com/220/220/sports-shoes?lock=1946',
-        'https://loremflickr.com/220/220/heels,shoe?lock=1947'
+        SAMPLE_PROFILE_IMAGES[1],
+        SAMPLE_PROFILE_IMAGES[2],
+        SAMPLE_PROFILE_IMAGES[3],
+        SAMPLE_PROFILE_IMAGES[4]
       ]
     },
     {
@@ -110,10 +109,10 @@ export default function ProfileScreen({ navigation }) {
       title: 'Bags',
       count: 87,
       images: [
-        'https://loremflickr.com/220/220/bag,white?lock=1948',
-        'https://loremflickr.com/220/220/handbag,pink?lock=1949',
-        'https://loremflickr.com/220/220/leather-bag?lock=1950',
-        'https://loremflickr.com/220/220/travel-bag?lock=1951'
+        SAMPLE_PROFILE_IMAGES[2],
+        SAMPLE_PROFILE_IMAGES[3],
+        SAMPLE_PROFILE_IMAGES[4],
+        SAMPLE_PROFILE_IMAGES[5]
       ]
     },
     {
@@ -121,10 +120,10 @@ export default function ProfileScreen({ navigation }) {
       title: 'Lingerie',
       count: 218,
       images: [
-        'https://loremflickr.com/220/220/woman,beach?lock=1952',
-        'https://loremflickr.com/220/220/fashion,woman?lock=1953',
-        'https://loremflickr.com/220/220/lingerie,style?lock=1954',
-        'https://loremflickr.com/220/220/model,portrait?lock=1955'
+        SAMPLE_PROFILE_IMAGES[3],
+        SAMPLE_PROFILE_IMAGES[4],
+        SAMPLE_PROFILE_IMAGES[5],
+        SAMPLE_PROFILE_IMAGES[0]
       ]
     }
   ];
@@ -249,7 +248,7 @@ export default function ProfileScreen({ navigation }) {
         <View style={styles.topRow}>
           <View style={styles.leftTopRow}>
             <TouchableOpacity onPress={onAvatarPress} style={styles.avatarWrap}>
-              <BlurredImage source={{ uri: avatarUri }} style={styles.avatar} />
+              <BlurredImage source={typeof avatarUri === 'string' ? { uri: avatarUri } : avatarUri} style={styles.avatar} />
             </TouchableOpacity>
             <View style={styles.activityBadge}><Text style={styles.activityText}>My Activity</Text></View>
           </View>
@@ -277,7 +276,7 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.recentTitle}>Recently viewed</Text>
           <View style={styles.recentRow}>
             {recentViewed.slice(0, 5).map((item, idx) => (
-              <BlurredImage key={`recent-${idx}`} source={{ uri: item }} style={styles.recentAvatar} />
+              <BlurredImage key={`recent-${idx}`} source={item} style={styles.recentAvatar} />
             ))}
           </View>
         </View>
@@ -322,7 +321,7 @@ export default function ProfileScreen({ navigation }) {
                 onPress={() => (index === 0 ? openLivePage() : handleStoryPress(item))}
                 activeOpacity={0.9}
               >
-                <BlurredImage source={{ uri: item.image }} style={styles.storyImage} />
+                <BlurredImage source={item.image} style={styles.storyImage} />
                 {index === 2 && (
                   <View style={styles.playCircle}><Icon name="play" size={18} color={COLORS.white} /></View>
                 )}
@@ -350,7 +349,7 @@ export default function ProfileScreen({ navigation }) {
             contentContainerStyle={styles.newItemsListContent}
             renderItem={({ item }) => (
               <TouchableOpacity style={styles.newItemCard} onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}>
-                <BlurredImage source={{ uri: item.image }} style={styles.newItemImage} />
+                <BlurredImage source={item.image} style={styles.newItemImage} />
                 <Text style={styles.newItemDesc} numberOfLines={2}>Lorem ipsum dolor sit amet consectetur.</Text>
                 <Text style={styles.newItemPrice}>${Number(item.price).toFixed(2).replace('.', ',')}</Text>
               </TouchableOpacity>
@@ -367,7 +366,7 @@ export default function ProfileScreen({ navigation }) {
             showsHorizontalScrollIndicator={false}
             renderItem={({ item, index }) => (
               <TouchableOpacity style={styles.popularCard} onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}>
-                <BlurredImage source={{ uri: item.image }} style={styles.popularImage} />
+                <BlurredImage source={item.image} style={styles.popularImage} />
                 <View style={styles.popularBottom}>
                   <Text style={styles.popularNumber}>1780</Text>
                   <Icon name="heart" size={12} color={COLORS.primary} />
@@ -385,7 +384,7 @@ export default function ProfileScreen({ navigation }) {
               <TouchableOpacity key={category.id} style={styles.categoryCard} onPress={() => navigation.navigate('Categories')}>
                 <View style={styles.categoryMosaic}>
                   {category.images.map((imageUri, index) => (
-                    <BlurredImage key={`${category.id}-${index}`} source={{ uri: imageUri }} style={styles.mosaicImage} />
+                    <BlurredImage key={`${category.id}-${index}`} source={imageUri} style={styles.mosaicImage} />
                   ))}
                 </View>
                 <View style={styles.categoryFooter}>
@@ -410,7 +409,7 @@ export default function ProfileScreen({ navigation }) {
           <View style={styles.flashGrid}>
             {[...FLASH_SALE_ITEMS, ...FLASH_SALE_ITEMS].slice(0, 6).map((item, index) => (
               <TouchableOpacity key={`${item.id}-${index}`} style={styles.flashCard} onPress={() => navigation.navigate('Home', { screen: 'FlashSaleDetail' })}>
-                <BlurredImage source={{ uri: `https://loremflickr.com/300/300/fashion,sale?lock=${1970 + index}` }} style={styles.flashImage} />
+                <BlurredImage source={SAMPLE_PROFILE_IMAGES[index % SAMPLE_PROFILE_IMAGES.length]} style={styles.flashImage} />
                 <View style={styles.flashDiscount}><Text style={styles.flashDiscountText}>-20%</Text></View>
               </TouchableOpacity>
             ))}
@@ -421,7 +420,7 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.sectionTitle}>Top Products</Text>
           <View style={styles.topProductsRow}>
             {topProducts.slice(0, 5).map((item, idx) => (
-              <BlurredImage key={`top-${idx}`} source={{ uri: item }} style={styles.topProductCircle} />
+              <BlurredImage key={`top-${idx}`} source={item} style={styles.topProductCircle} />
             ))}
           </View>
         </View>
@@ -434,7 +433,7 @@ export default function ProfileScreen({ navigation }) {
           <View style={styles.justGrid}>
             {homeProducts.slice(0, 6).map((item, index) => (
               <TouchableOpacity key={`just-${item.id}-${index}`} style={styles.justCard} onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}>
-                <BlurredImage source={{ uri: `https://loremflickr.com/450/450/fashion,style?lock=${1980 + index}` }} style={styles.justImage} />
+                <BlurredImage source={SAMPLE_PROFILE_IMAGES[index % SAMPLE_PROFILE_IMAGES.length]} style={styles.justImage} />
                 <Text style={styles.justDesc} numberOfLines={2}>Lorem ipsum dolor sit amet consectetur</Text>
                 <Text style={styles.justPrice}>$17,00</Text>
               </TouchableOpacity>
@@ -494,7 +493,7 @@ export default function ProfileScreen({ navigation }) {
           {storyStep === 0 ? (
             <View style={styles.storyFlowCard}>
               <TouchableOpacity activeOpacity={0.95} style={styles.storyFlowImageWrap} onPress={openStoryProductStep}>
-                {activeStory ? <BlurredImage source={{ uri: activeStory.image }} style={styles.storyFlowImage} /> : null}
+                {activeStory ? <BlurredImage source={activeStory.image} style={styles.storyFlowImage} /> : null}
                 <TouchableOpacity style={[styles.storyFlowDot, styles.storyFlowDotLeft]} onPress={openStoryProductStep} />
                 <TouchableOpacity style={[styles.storyFlowDot, styles.storyFlowDotRight]} onPress={openStoryProductStep} />
               </TouchableOpacity>
@@ -507,7 +506,7 @@ export default function ProfileScreen({ navigation }) {
           ) : (
             <View style={styles.storyFlowCard}>
               <View style={styles.storyFlowProductImageWrap}>
-                <BlurredImage source={{ uri: 'https://loremflickr.com/500/760/fashion,yellow,woman?lock=2014' }} style={styles.storyFlowProductImage} />
+                <BlurredImage source={SAMPLE_PROFILE_IMAGES[5]} style={styles.storyFlowProductImage} />
               </View>
               <View style={styles.storyFlowProductRow}>
                 <Text style={styles.storyFlowProductText}>Lorem ipsum dolor sit amet,{`\n`}consectetur adipiscing elit.</Text>
