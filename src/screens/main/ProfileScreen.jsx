@@ -21,6 +21,7 @@ import { useImagePicker } from '../../hooks/useImagePicker';
 
 const PROFILE_IMAGE_BLUR = 30;
 const PROFILE_IMAGE_OVERLAY = 'rgba(0,0,0,0.102)';
+const SAMPLE_IMAGE = 'https://picsum.photos/id/1027/600/600';
 
 function BlurredImage({ source, style }) {
   return (
@@ -34,7 +35,7 @@ function BlurredImage({ source, style }) {
 export default function ProfileScreen({ navigation }) {
   const { pickFromCamera, pickFromGallery } = useImagePicker();
 
-  const [avatarUri, setAvatarUri] = useState('https://loremflickr.com/220/220/face,woman?lock=1901');
+  const [avatarUri, setAvatarUri] = useState(SAMPLE_IMAGE);
   const [scannerVisible, setScannerVisible] = useState(false);
   const [cameraPermission, setCameraPermission] = useState(null);
   const [isScanned, setIsScanned] = useState(false);
@@ -50,7 +51,7 @@ export default function ProfileScreen({ navigation }) {
   ];
 
   const recentViewed = [
-    'https://loremflickr.com/120/120/woman,style?lock=1910',
+    SAMPLE_IMAGE,
     'https://loremflickr.com/120/120/fashion,girl?lock=1911',
     'https://loremflickr.com/120/120/model,portrait?lock=1912',
     'https://loremflickr.com/120/120/woman,casual?lock=1913',
