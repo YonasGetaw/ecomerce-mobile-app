@@ -60,7 +60,7 @@ export default function MainTabNavigator() {
           
           return <Icon name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: COLORS.primary,
+        tabBarActiveTintColor: COLORS.warning,
         tabBarInactiveTintColor: COLORS.primary,
         tabBarStyle: {
           height: 60,
