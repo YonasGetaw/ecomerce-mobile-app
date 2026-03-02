@@ -197,13 +197,14 @@ export default function ProfileScreen({ navigation }) {
           <View style={styles.arrowCircle}><Icon name="arrow-right" size={10} color={COLORS.white} /></View>
         </TouchableOpacity>
 
-        <View style={styles.sectionBlock}>
-          <Text style={styles.sectionTitle}>Recently viewed</Text>
+        <View style={styles.recentBlock}>
+          <Text style={styles.recentTitle}>Recently viewed</Text>
           <FlatList
             horizontal
             data={recentViewed}
             keyExtractor={(item, idx) => `recent-${idx}`}
             showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.recentListContent}
             renderItem={({ item }) => <Image source={{ uri: item }} style={styles.recentAvatar} />}
           />
         </View>
@@ -483,6 +484,19 @@ const styles = StyleSheet.create({
   sectionBlock: {
     marginTop: SIZES.medium
   },
+  recentBlock: {
+    marginTop: SIZES.medium
+  },
+  recentTitle: {
+    fontSize: 18,
+    lineHeight: 22,
+    color: COLORS.text.primary,
+    fontFamily: FONTS.bold,
+    marginBottom: 12
+  },
+  recentListContent: {
+    paddingRight: 6
+  },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -506,12 +520,17 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.medium
   },
   recentAvatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    marginRight: SIZES.small,
-    borderWidth: 1,
-    borderColor: COLORS.border
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    marginRight: 12,
+    borderWidth: 2,
+    borderColor: COLORS.white,
+    shadowColor: COLORS.black,
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 2
   },
   ordersWrap: {
     position: 'relative',
