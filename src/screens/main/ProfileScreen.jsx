@@ -179,6 +179,18 @@ export default function ProfileScreen({ navigation }) {
     setStoryStep(1);
   };
 
+  const handleStoryShopPress = () => {
+    closeStoryModal();
+    setTimeout(() => {
+      const parentNav = navigation.getParent?.();
+      if (parentNav) {
+        parentNav.navigate('Home', { screen: 'ProductSearch' });
+        return;
+      }
+      navigation.navigate('Home', { screen: 'ProductSearch' });
+    }, 120);
+  };
+
   const renderSectionHeader = (title, onSeeAll) => (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -452,8 +464,8 @@ export default function ProfileScreen({ navigation }) {
               </View>
               <View style={styles.storyFlowProductRow}>
                 <Text style={styles.storyFlowProductText}>Lorem ipsum dolor sit amet,{`\n`}consectetur adipiscing elit.</Text>
-                <TouchableOpacity style={styles.storyFlowShopBtn} onPress={() => navigation.navigate('Home', { screen: 'ProductSearch' })}>
-                  <Text style={styles.storyFlowShopText}>Shop</Text>
+                <TouchableOpacity style={styles.storyFlowShopBtn} onPress={handleStoryShopPress}>
+                  <Text style={styles.storyFlowShopText}>Shop Now</Text>
                 </TouchableOpacity>
               </View>
               <View style={styles.storyFlowPagination}>
