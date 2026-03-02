@@ -12,6 +12,7 @@ import {
   Modal,
   Alert
 } from 'react-native';
+import { CommonActions } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 import { Camera } from 'expo-camera';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
@@ -180,10 +181,20 @@ export default function ProfileScreen({ navigation }) {
   };
 
   const handleStoryShopPress = () => {
-    closeStoryModal();
+    setStoryModalVisible(false);
+    setActiveStory(null);
+    setStoryStep(0);
+
     setTimeout(() => {
+      navigation.dispatch(
+        CommonActions.navigate({
+          name: 'Home',
+          params: { screen: 'ProductSearch' }
+        })
+      );
+
       navigation.navigate('Home', { screen: 'ProductSearch' });
-    }, 120);
+    }, 50);
   };
 
   const renderSectionHeader = (title, onSeeAll) => (
