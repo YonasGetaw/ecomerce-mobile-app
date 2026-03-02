@@ -28,6 +28,7 @@ export default function ProfileScreen({ navigation }) {
   const [selectedOrderTab, setSelectedOrderTab] = useState('receive');
   const [storyModalVisible, setStoryModalVisible] = useState(false);
   const [activeStory, setActiveStory] = useState(null);
+  const [storyStep, setStoryStep] = useState(0);
 
   const orderTabs = [
     { key: 'pay', label: 'To Pay' },
@@ -164,12 +165,18 @@ export default function ProfileScreen({ navigation }) {
 
   const handleStoryPress = (story) => {
     setActiveStory(story);
+    setStoryStep(0);
     setStoryModalVisible(true);
   };
 
   const closeStoryModal = () => {
     setStoryModalVisible(false);
     setActiveStory(null);
+    setStoryStep(0);
+  };
+
+  const openStoryProductStep = () => {
+    setStoryStep(1);
   };
 
   const renderSectionHeader = (title, onSeeAll) => (
@@ -260,7 +267,7 @@ export default function ProfileScreen({ navigation }) {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.storiesContent}
             renderItem={({ item, index }) => (
-              <TouchableOpacity style={styles.storyCard} onPress={() => handleStoryPress(item)} activeOpacity={0.9}>
+              <TouchableOpacity style={styles.storyCard} onPress={() => handleStoryPress(item, index)} activeOpacity={0.9}>
                 <Image source={{ uri: item.image }} style={styles.storyImage} />
                 {index === 2 && (
                   <View style={styles.playCircle}><Icon name="play" size={18} color={COLORS.white} /></View>
@@ -416,19 +423,47 @@ export default function ProfileScreen({ navigation }) {
         </Modal>
       )}
 
-      <Modal visible={storyModalVisible} transparent animationType="fade" onRequestClose={closeStoryModal}>
-        <View style={styles.storyModalOverlay}>
-          <TouchableOpacity style={styles.storyModalBackdrop} activeOpacity={1} onPress={closeStoryModal} />
-          <View style={styles.storyModalCard}>
-            {activeStory ? <Image source={{ uri: activeStory.image }} style={styles.storyModalImage} /> : null}
-            <View style={styles.storyModalTopRow}>
-              <View style={styles.storyModalBadge}><Text style={styles.storyModalBadgeText}>{activeStory?.title || 'Story'}</Text></View>
-              <TouchableOpacity style={styles.storyModalClose} onPress={closeStoryModal}>
-                <Icon name="x" size={16} color={COLORS.white} />
-              </TouchableOpacity>
-            </View>
+      <Modal visible={storyModalVisible} animationType="slide" onRequestClose={closeStoryModal}>
+        <SafeAreaView style={styles.storyFlowScreen}>
+          <View style={styles.storyFlowHeader}>
+            <Text style={styles.storyFlowTitle}>{storyStep === 0 ? '20 Story + Dots' : '22 Story + Product Style 01'}</Text>
+            <TouchableOpacity style={styles.storyFlowClose} onPress={closeStoryModal}>
+              <Icon name="x" size={18} color={COLORS.text.primary} />
+            </TouchableOpacity>
           </View>
-        </View>
+
+          {storyStep === 0 ? (
+            <View style={styles.storyFlowCard}>
+              <TouchableOpacity activeOpacity={0.95} style={styles.storyFlowImageWrap} onPress={openStoryProductStep}>
+                {activeStory ? <Image source={{ uri: activeStory.image }} style={styles.storyFlowImage} /> : null}
+                <TouchableOpacity style={[styles.storyFlowDot, styles.storyFlowDotLeft]} onPress={openStoryProductStep} />
+                <TouchableOpacity style={[styles.storyFlowDot, styles.storyFlowDotRight]} onPress={openStoryProductStep} />
+              </TouchableOpacity>
+              <View style={styles.storyFlowPagination}>
+                {[0, 1, 2, 3, 4, 5].map((dot) => (
+                  <View key={`story-step1-dot-${dot}`} style={[styles.storyFlowPageDot, dot === 2 && styles.storyFlowPageDotActive]} />
+                ))}
+              </View>
+            </View>
+          ) : (
+            <View style={styles.storyFlowCard}>
+              <View style={styles.storyFlowProductImageWrap}>
+                <Image source={{ uri: 'https://loremflickr.com/500/760/fashion,yellow,woman?lock=2014' }} style={styles.storyFlowProductImage} />
+              </View>
+              <View style={styles.storyFlowProductRow}>
+                <Text style={styles.storyFlowProductText}>Lorem ipsum dolor sit amet,{`\n`}consectetur adipiscing elit.</Text>
+                <TouchableOpacity style={styles.storyFlowShopBtn} onPress={() => navigation.navigate('Home', { screen: 'ProductSearch' })}>
+                  <Text style={styles.storyFlowShopText}>Shop</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.storyFlowPagination}>
+                {[0, 1, 2, 3, 4, 5].map((dot) => (
+                  <View key={`story-step2-dot-${dot}`} style={[styles.storyFlowPageDot, dot === 2 && styles.storyFlowPageDotActive]} />
+                ))}
+              </View>
+            </View>
+          )}
+        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );
@@ -916,55 +951,129 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.medium,
     fontSize: FONTS.sizes.medium
   },
-  storyModalOverlay: {
+  storyFlowScreen: {
     flex: 1,
-    backgroundColor: COLORS.overlay,
+    backgroundColor: '#EFEFEF',
+    paddingHorizontal: 14,
+    paddingTop: 10,
+    paddingBottom: 14
+  },
+  storyFlowHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10
+  },
+  storyFlowTitle: {
+    fontSize: 18,
+    color: '#BCBCBC',
+    fontFamily: FONTS.bold
+  },
+  storyFlowClose: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: COLORS.white,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  storyFlowCard: {
+    flex: 1,
+    backgroundColor: COLORS.surface,
+    borderRadius: 4,
+    paddingHorizontal: 12,
+    paddingTop: 12,
+    paddingBottom: 10
+  },
+  storyFlowImageWrap: {
+    flex: 1,
+    borderRadius: 10,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: '#1EA5FF',
+    position: 'relative'
+  },
+  storyFlowImage: {
+    width: '100%',
+    height: '100%'
+  },
+  storyFlowDot: {
+    position: 'absolute',
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: COLORS.primary,
+    borderWidth: 3,
+    borderColor: COLORS.white
+  },
+  storyFlowDotLeft: {
+    left: '22%',
+    top: '46%'
+  },
+  storyFlowDotRight: {
+    right: '30%',
+    top: '65%'
+  },
+  storyFlowProductImageWrap: {
+    height: '78%',
+    borderRadius: 10,
+    overflow: 'hidden',
+    backgroundColor: COLORS.warningLight,
+    marginBottom: 10
+  },
+  storyFlowProductImage: {
+    width: '100%',
+    height: '100%'
+  },
+  storyFlowProductRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10
+  },
+  storyFlowProductText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: COLORS.text.primary,
+    fontFamily: FONTS.regular,
+    flex: 1,
+    marginRight: 10
+  },
+  storyFlowShopBtn: {
+    backgroundColor: COLORS.primary,
+    borderRadius: 12,
+    paddingHorizontal: 32,
+    paddingVertical: 10
+  },
+  storyFlowShopText: {
+    color: COLORS.white,
+    fontFamily: FONTS.medium,
+    fontSize: 16
+  },
+  storyFlowPagination: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 6
+  },
+  storyFlowPageDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#BDD1F4',
+    marginHorizontal: 5
+  },
+  storyFlowPageDotActive: {
+    width: 34,
+    borderRadius: 8,
+    backgroundColor: COLORS.primary
   },
   storyModalBackdrop: {
     position: 'absolute',
     left: 0,
     right: 0,
     top: 0,
-    bottom: 0
-  },
-  storyModalCard: {
-    width: '86%',
-    height: '72%',
-    borderRadius: 14,
-    overflow: 'hidden',
-    backgroundColor: COLORS.surface
-  },
-  storyModalImage: {
-    width: '100%',
-    height: '100%'
-  },
-  storyModalTopRow: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    right: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  storyModalBadge: {
-    backgroundColor: COLORS.success,
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 4
-  },
-  storyModalBadgeText: {
-    color: COLORS.white,
-    fontFamily: FONTS.bold,
-    fontSize: 12
-  },
-  storyModalClose: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: COLORS.black,
+    bottom: 0,
     alignItems: 'center',
     justifyContent: 'center'
   }
