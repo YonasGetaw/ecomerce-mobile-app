@@ -210,12 +210,14 @@ export default function ProfileScreen({ navigation }) {
 
         <View style={styles.sectionBlock}>
           <Text style={styles.sectionTitle}>My Orders</Text>
-          <View style={styles.ordersRow}>
-            <TouchableOpacity style={styles.orderChip}><Text style={styles.orderChipText}>To Pay</Text></TouchableOpacity>
-            <TouchableOpacity style={styles.orderChip}><Text style={styles.orderChipText}>To Receive</Text></TouchableOpacity>
-            <TouchableOpacity style={styles.orderChip}><Text style={styles.orderChipText}>To Review</Text></TouchableOpacity>
+          <View style={styles.ordersWrap}>
+            <View style={styles.ordersRow}>
+              <TouchableOpacity style={styles.orderChip}><Text style={styles.orderChipText}>To Pay</Text></TouchableOpacity>
+              <TouchableOpacity style={styles.orderChip}><Text style={styles.orderChipText}>To Recieve</Text></TouchableOpacity>
+              <TouchableOpacity style={styles.orderChip}><Text style={styles.orderChipText}>To Review</Text></TouchableOpacity>
+            </View>
+            <View style={styles.orderDot} />
           </View>
-          <View style={styles.orderDot} />
         </View>
 
         <View style={styles.sectionBlock}>
@@ -228,10 +230,10 @@ export default function ProfileScreen({ navigation }) {
             renderItem={({ item, index }) => (
               <TouchableOpacity style={styles.storyCard}>
                 <Image source={{ uri: item.image }} style={styles.storyImage} />
+                <View style={styles.playCircle}><Icon name="play" size={16} color={COLORS.white} /></View>
                 {index === 0 && (
-                  <View style={styles.playCircle}><Icon name="play" size={14} color={COLORS.white} /></View>
+                  <View style={styles.storyBadge}><Text style={styles.storyBadgeText}>Live</Text></View>
                 )}
-                <View style={styles.storyBadge}><Text style={styles.storyBadgeText}>{item.title}</Text></View>
               </TouchableOpacity>
             )}
           />
@@ -511,36 +513,41 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border
   },
+  ordersWrap: {
+    position: 'relative',
+    marginTop: 6
+  },
   ordersRow: {
     flexDirection: 'row',
     justifyContent: 'space-between'
   },
   orderChip: {
-    width: '31.5%',
-    height: 30,
-    borderRadius: 15,
+    width: '31.8%',
+    height: 34,
+    borderRadius: 17,
     backgroundColor: COLORS.primaryLight,
     alignItems: 'center',
     justifyContent: 'center'
   },
   orderChipText: {
-    fontSize: 11,
+    fontSize: 13,
     color: COLORS.primary,
     fontFamily: FONTS.medium
   },
   orderDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#2EC845',
-    marginTop: -4,
-    marginLeft: '57%'
+    position: 'absolute',
+    top: -3,
+    left: '66%',
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: COLORS.success
   },
   storyCard: {
-    width: 78,
-    height: 122,
-    borderRadius: SIZES.radius.medium,
-    marginRight: SIZES.small,
+    width: 104,
+    height: 168,
+    borderRadius: SIZES.radius.large,
+    marginRight: 8,
     overflow: 'hidden',
     position: 'relative'
   },
@@ -554,20 +561,20 @@ const styles = StyleSheet.create({
     top: '50%',
     marginLeft: -14,
     marginTop: -14,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.35)',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: 'rgba(255,255,255,0.3)',
     alignItems: 'center',
     justifyContent: 'center'
   },
   storyBadge: {
     position: 'absolute',
-    left: 4,
-    top: 4,
+    left: 6,
+    top: 6,
     backgroundColor: COLORS.success,
-    borderRadius: 8,
-    paddingHorizontal: 6,
+    borderRadius: 10,
+    paddingHorizontal: 7,
     paddingVertical: 2
   },
   storyBadgeText: {
