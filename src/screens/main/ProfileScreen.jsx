@@ -398,13 +398,11 @@ export default function ProfileScreen({ navigation }) {
 
         <View style={styles.sectionBlock}>
           <Text style={styles.sectionTitle}>Top Products</Text>
-          <FlatList
-            horizontal
-            data={topProducts}
-            keyExtractor={(item, idx) => `top-${idx}`}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => <Image source={{ uri: item }} style={styles.topProductCircle} />}
-          />
+          <View style={styles.topProductsRow}>
+            {topProducts.slice(0, 5).map((item, idx) => (
+              <Image key={`top-${idx}`} source={{ uri: item }} style={styles.topProductCircle} />
+            ))}
+          </View>
         </View>
 
         <View style={[styles.sectionBlock, styles.lastSection]}>
@@ -922,13 +920,25 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontFamily: FONTS.bold
   },
+  topProductsRow: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 6
+  },
   topProductCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: COLORS.border
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 2,
+    borderColor: COLORS.white,
+    backgroundColor: '#ECECEC',
+    shadowColor: COLORS.black,
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2
   },
   justHeaderRow: {
     flexDirection: 'row',
