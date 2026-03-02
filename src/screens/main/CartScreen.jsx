@@ -10,13 +10,15 @@ import {
   StatusBar
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import { COLORS, FONTS, SIZES } from '../../utils/colors';
+import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import { useCartContext } from '../../Context/CartContext';
 import { useFavoritesContext } from '../../Context/FavoritesContext';
+import { useLocalization } from '../../Context/LocalizationContext';
 
 export default function CartScreen({ navigation }) {
   const { cartItems, updateQuantity, removeFromCart, addToCart } = useCartContext();
   const { favorites, removeFromFavorites } = useFavoritesContext();
+  const { t } = useLocalization();
   const isCartEmpty = cartItems.length === 0;
 
   const total = useMemo(
@@ -54,14 +56,14 @@ export default function CartScreen({ navigation }) {
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.headerRow}>
-          <Text style={styles.headerTitle}>Cart</Text>
+          <Text style={styles.headerTitle}>{t('cartTitle')}</Text>
           <View style={styles.countBadge}>
             <Text style={styles.countText}>{cartItems.length}</Text>
           </View>
         </View>
 
         <View style={styles.shippingCard}>
-          <Text style={styles.shippingTitle}>Shipping Address</Text>
+          <Text style={styles.shippingTitle}>{t('shippingAddressTitle')}</Text>
           <Text style={styles.shippingText}>26, Duong So 2, Thao Dien Ward, An Phu, District 2, Ho Chi Minh city</Text>
           <TouchableOpacity style={styles.editAddressButton}>
             <Icon name="edit-2" size={15} color={COLORS.white} />
@@ -97,8 +99,8 @@ export default function CartScreen({ navigation }) {
             </View>
 
             <View style={styles.itemInfoWrap}>
-              <Text style={styles.itemDesc} numberOfLines={2}>{item.description || 'Lorem ipsum dolor sit amet consectetur.'}</Text>
-              <Text style={styles.itemVariant}>{`${item.selectedColor || 'Pink'}, Size ${item.selectedSize || 'M'}`}</Text>
+              <Text style={styles.itemDesc} numberOfLines={2}>{item.description || t('loremLong')}</Text>
+              <Text style={styles.itemVariant}>{`${item.selectedColor || 'Pink'}, ${t('size')} ${item.selectedSize || 'M'}`}</Text>
 
               <View style={styles.itemBottomRow}>
                 <Text style={styles.itemPrice}>{formatPrice(item.price)}</Text>
@@ -128,7 +130,7 @@ export default function CartScreen({ navigation }) {
         ))}
 
         <View style={styles.wishlistSection}>
-          <Text style={styles.wishlistTitle}>From Your Wishlist</Text>
+          <Text style={styles.wishlistTitle}>{t('fromYourWishlist')}</Text>
 
           {wishlistItems.map((item) => (
             <View key={`wish-${item.id}`} style={styles.wishlistRow}>
@@ -148,7 +150,7 @@ export default function CartScreen({ navigation }) {
               </View>
 
               <View style={styles.wishlistInfoWrap}>
-                <Text numberOfLines={2} style={styles.itemDesc}>{item.description || 'Lorem ipsum dolor sit amet consectetur.'}</Text>
+                <Text numberOfLines={2} style={styles.itemDesc}>{item.description || t('loremLong')}</Text>
                 <Text style={styles.itemPrice}>{formatPrice(item.price)}</Text>
 
                 <View style={styles.wishlistBottomRow}>
@@ -174,7 +176,7 @@ export default function CartScreen({ navigation }) {
       </ScrollView>
 
       <View style={styles.bottomBar}>
-        <Text style={styles.totalText}>{`Total ${formatPrice(total)}`}</Text>
+        <Text style={styles.totalText}>{`${t('total')} ${formatPrice(total)}`}</Text>
         <TouchableOpacity
           style={[styles.checkoutButton, isCartEmpty && styles.checkoutButtonDisabled]}
           onPress={() => {
@@ -184,7 +186,7 @@ export default function CartScreen({ navigation }) {
           }}
           disabled={isCartEmpty}
         >
-          <Text style={[styles.checkoutText, isCartEmpty && styles.checkoutTextDisabled]}>Checkout</Text>
+          <Text style={[styles.checkoutText, isCartEmpty && styles.checkoutTextDisabled]}>{t('checkout')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

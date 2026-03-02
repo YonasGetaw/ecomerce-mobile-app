@@ -15,10 +15,12 @@ import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import PrimaryButton from '../../components/buttons/PrimaryButton';
 import { useFavoritesContext } from '../../Context/FavoritesContext';
 import { useCartContext } from '../../Context/CartContext';
+import { useLocalization } from '../../Context/LocalizationContext';
 
 export default function FavoritesScreen({ navigation }) {
   const { favorites, removeFromFavorites } = useFavoritesContext();
   const { addToCart } = useCartContext();
+  const { t } = useLocalization();
 
   const recentlyViewed = useMemo(() => favorites.slice(0, 8), [favorites]);
 
@@ -28,12 +30,12 @@ export default function FavoritesScreen({ navigation }) {
 
   const handleAddToCart = async (item) => {
     await addToCart(item, 1, item.selectedSize ?? 'M', item.selectedColor ?? 'Pink');
-    Alert.alert('Added to Cart', `${item.name} added to your cart.`, [
+    Alert.alert(t('addedToCart'), `${item.name} ${t('addedToYourCart')}`, [
       {
-        text: 'View Cart',
+        text: t('viewCart'),
         onPress: () => navigation.navigate('Cart', { screen: 'CartMain' })
       },
-      { text: 'OK', style: 'cancel' }
+      { text: t('ok'), style: 'cancel' }
     ]);
   };
 
@@ -66,7 +68,7 @@ export default function FavoritesScreen({ navigation }) {
 
       <View style={styles.detailsWrap}>
         <Text style={styles.descriptionText} numberOfLines={2}>
-          {item.description || 'Lorem ipsum dolor sit amet consectetur.'}
+          {item.description || t('loremLong')}
         </Text>
 
         <View style={styles.priceRow}>
@@ -106,15 +108,15 @@ export default function FavoritesScreen({ navigation }) {
         <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
 
         <View style={styles.headerOnly}>
-          <Text style={styles.title}>Wishlist</Text>
+          <Text style={styles.title}>{t('wishlist')}</Text>
         </View>
 
         <View style={styles.emptyContainer}>
           <Icon name="heart" size={78} color={COLORS.text.hint} />
-          <Text style={styles.emptyTitle}>No wishlist items yet</Text>
-          <Text style={styles.emptyText}>Save products to wishlist and they will appear here.</Text>
+          <Text style={styles.emptyTitle}>{t('noWishlistItemsYet')}</Text>
+          <Text style={styles.emptyText}>{t('saveProductsToWishlist')}</Text>
           <PrimaryButton
-            title="Explore Products"
+            title={t('exploreProducts')}
             onPress={() => navigation.navigate('Home', { screen: 'HomeMain' })}
             style={styles.exploreButton}
           />
@@ -135,13 +137,13 @@ export default function FavoritesScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={(
           <View>
-            <Text style={styles.title}>Wishlist</Text>
+            <Text style={styles.title}>{t('wishlist')}</Text>
 
             <View style={styles.recentHeaderRow}>
               <TouchableOpacity
                 onPress={() => navigation.navigate('Home', { screen: 'RecentlyViewed', params: { items: recentlyViewed } })}
               >
-                <Text style={styles.recentTitle}>Recently viewed</Text>
+                <Text style={styles.recentTitle}>{t('recentlyViewed')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.recentArrowButton}

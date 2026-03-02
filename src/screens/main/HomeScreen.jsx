@@ -17,11 +17,13 @@ import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import ProductCard from '../../components/Cards/ProductCard';
 import { PRODUCTS, FLASH_SALE_ITEMS } from '../../data/MockData';
 import { useFavoritesContext } from '../../Context/FavoritesContext';
+import { useLocalization } from '../../Context/LocalizationContext';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function HomeScreen({ navigation }) {
   const { toggleFavorite, isFavorite } = useFavoritesContext();
+  const { t } = useLocalization();
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchHistory, setShowSearchHistory] = useState(false);
   const [searchHistory, setSearchHistory] = useState(['Dresses', 'Jeans', 'T-Shirts']);
@@ -50,9 +52,19 @@ export default function HomeScreen({ navigation }) {
     image: sampleProductImages[(index + 2) % sampleProductImages.length]
   }));
 
+  const getCategoryLabel = (name) => {
+    if (name === 'Clothing') return t('clothing');
+    if (name === 'Shoes') return t('shoes');
+    if (name === 'Bags') return t('bags');
+    if (name === 'Lingerie') return t('lingerie');
+    if (name === 'Watch') return t('accessories');
+    if (name === 'Hoodies') return t('clothing');
+    return name;
+  };
+
   const flashSaleDisplayItems = [...homeFlashSaleItems, ...homeFlashSaleItems].slice(0, 6);
   const justForYouItems = [...homeProducts, ...homeProducts].slice(0, 8);
-  const popularTypeLabels = ['New', 'Sale', 'Hot'];
+  const popularTypeLabels = [t('newLabel'), t('saleLabel'), t('hotLabel')];
   const popularPriceText = '1780';
 
   const categories = [
@@ -193,14 +205,14 @@ export default function HomeScreen({ navigation }) {
 
   const renderHeader = () => (
     <View style={styles.header}>
-      <Text style={styles.shopText}>Shop</Text>
+      <Text style={styles.shopText}>{t('shop')}</Text>
       <View style={styles.searchContainer}>
         <TouchableOpacity onPress={() => handleSearch()}>
           <Icon name="search" size={20} color={COLORS.text.secondary} />
         </TouchableOpacity>
         <TextInput
           style={styles.searchInput}
-          placeholder="Search products..."
+          placeholder={t('searchProducts')}
           value={searchQuery}
           onChangeText={setSearchQuery}
           onFocus={() => setShowSearchHistory(true)}
@@ -219,7 +231,7 @@ export default function HomeScreen({ navigation }) {
       <ScrollView keyboardShouldPersistTaps="handled">
         {searchHistory.length > 0 && (
           <View style={styles.historySection}>
-            <Text style={styles.sectionTitle}>Recent Searches</Text>
+            <Text style={styles.sectionTitle}>{t('recentSearches')}</Text>
             {searchHistory.map((item, index) => (
               <View key={index} style={styles.historyItem}>
                 <TouchableOpacity 
@@ -240,7 +252,7 @@ export default function HomeScreen({ navigation }) {
         )}
 
         <View style={styles.recommendationsSection}>
-          <Text style={styles.sectionTitle}>Recommendations</Text>
+          <Text style={styles.sectionTitle}>{t('recommendations')}</Text>
           <View style={styles.recommendationsGrid}>
             {recommendations.map((item, index) => (
               <TouchableOpacity
@@ -312,9 +324,9 @@ export default function HomeScreen({ navigation }) {
           {/* Categories */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Categories</Text>
+              <Text style={styles.sectionTitle}>{t('categories')}</Text>
               <TouchableOpacity style={styles.seeAllButton} onPress={() => navigation.navigate('Categories')}>
-                <Text style={styles.seeAllText}>See All</Text>
+                <Text style={styles.seeAllText}>{t('seeAll')}</Text>
                 <View style={styles.arrowIcon}>
                   <Icon name="arrow-right" size={12} color={COLORS.white} />
                 </View>
@@ -336,7 +348,7 @@ export default function HomeScreen({ navigation }) {
                   </View>
 
                   <View style={styles.categoryFooter}>
-                    <Text style={styles.categoryMosaicName}>{item.name}</Text>
+                    <Text style={styles.categoryMosaicName}>{getCategoryLabel(item.name)}</Text>
                     <View style={styles.categoryCountBadge}>
                       <Text style={styles.categoryCountBadgeText}>{item.count}</Text>
                     </View>
@@ -347,7 +359,7 @@ export default function HomeScreen({ navigation }) {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Top Products</Text>
+            <Text style={styles.sectionTitle}>{t('topProducts')}</Text>
 
             <FlatList
               data={homeProducts.slice(0, 8)}
@@ -370,9 +382,9 @@ export default function HomeScreen({ navigation }) {
           {/* New Items */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>New Items</Text>
+              <Text style={styles.sectionTitle}>{t('newItems')}</Text>
               <TouchableOpacity style={styles.seeAllButton} onPress={() => navigation.navigate('ProductSearch')}>
-                <Text style={styles.seeAllText}>See All</Text>
+                <Text style={styles.seeAllText}>{t('seeAll')}</Text>
                 <View style={styles.arrowIcon}>
                   <Icon name="arrow-right" size={12} color={COLORS.white} />
                 </View>
@@ -399,7 +411,7 @@ export default function HomeScreen({ navigation }) {
           {/* Flash Sale */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Flash Sale</Text>
+              <Text style={styles.sectionTitle}>{t('flashSale')}</Text>
               <View style={styles.flashTimerContainer}>
                 <Icon name="clock" size={18} color={COLORS.primary} />
                 <View style={styles.timerChip}><Text style={styles.timerChipText}>{formatTwoDigits(flashHours)}</Text></View>
@@ -428,9 +440,9 @@ export default function HomeScreen({ navigation }) {
           {/* Most Popular */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Most Popular</Text>
+              <Text style={styles.sectionTitle}>{t('mostPopular')}</Text>
               <TouchableOpacity style={styles.seeAllButton}>
-                <Text style={styles.seeAllText}>See All</Text>
+                <Text style={styles.seeAllText}>{t('seeAll')}</Text>
                 <View style={styles.arrowIcon}>
                   <Icon name="arrow-right" size={12} color={COLORS.white} />
                 </View>
@@ -476,7 +488,7 @@ export default function HomeScreen({ navigation }) {
           <View style={[styles.section, styles.lastSection]}>
             <View style={styles.sectionHeader}>
               <View style={styles.justForYouHeader}>
-                <Text style={styles.sectionTitle}>Just For You</Text>
+                <Text style={styles.sectionTitle}>{t('justForYou')}</Text>
                 <Icon name="star" size={14} color={COLORS.primary} style={styles.justForYouStar} />
               </View>
             </View>

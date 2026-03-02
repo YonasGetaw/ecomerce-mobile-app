@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
+import { useLocalization } from '../../Context/LocalizationContext';
 
 const TABS = ['All', 'Female', 'Male'];
 
@@ -28,8 +29,26 @@ const MALE_SUBCATEGORIES = ['Shirts', 'Pants', 'Polos', 'Shorts', 'Jackets', 'Ho
 const ALL_SUBCATEGORIES = ['Dresses', 'Pants', 'Skirts', 'Shorts', 'Jackets', 'Hoodies', 'Shirts', 'Polo', 'T-Shirts', 'Tunics'];
 
 export default function CategoriesScreen({ navigation }) {
+  const { t } = useLocalization();
   const [selectedTab, setSelectedTab] = useState('Female');
   const [expandedCategory, setExpandedCategory] = useState('Clothing');
+
+  const getCategoryLabel = (name) => {
+    if (name === 'Clothing') return t('clothing');
+    if (name === 'Shoes') return t('shoes');
+    if (name === 'Bags') return t('bags');
+    if (name === 'Lingerie') return t('lingerie');
+    if (name === 'Accessories') return t('accessories');
+    if (name === 'Just for You') return t('justForYouCategory');
+    return name;
+  };
+
+  const getTabLabel = (tab) => {
+    if (tab === 'All') return t('allTab');
+    if (tab === 'Female') return t('femaleTab');
+    if (tab === 'Male') return t('maleTab');
+    return tab;
+  };
 
   const clothingItems = useMemo(() => {
     if (selectedTab === 'Male') return MALE_SUBCATEGORIES;
@@ -95,7 +114,7 @@ export default function CategoriesScreen({ navigation }) {
         >
           <Image source={{ uri: CATEGORY_IMAGES[item.name] }} style={styles.categoryThumb} />
           <View style={styles.categoryTextWrap}>
-            <Text style={styles.categoryTitle}>{item.name}</Text>
+            <Text style={styles.categoryTitle}>{getCategoryLabel(item.name)}</Text>
             {isJustForYou && <Icon name="star" size={12} color={COLORS.primary} style={styles.justForYouStar} />}
           </View>
 
@@ -122,11 +141,11 @@ export default function CategoriesScreen({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
 
       <View style={styles.screenLabelWrap}>
-        <Text style={styles.screenLabel}>27 Categories Filter</Text>
+        <Text style={styles.screenLabel}>{`27 ${t('categoriesFilter')}`}</Text>
       </View>
 
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>All Categories</Text>
+        <Text style={styles.headerTitle}>{t('allCategories')}</Text>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="x" size={24} color={COLORS.text.primary} />
         </TouchableOpacity>
@@ -142,7 +161,7 @@ export default function CategoriesScreen({ navigation }) {
               onPress={() => handleTabPress(tab)}
               activeOpacity={0.9}
             >
-              <Text style={[styles.tabButtonText, isActive && styles.activeTabButtonText]}>{tab}</Text>
+              <Text style={[styles.tabButtonText, isActive && styles.activeTabButtonText]}>{getTabLabel(tab)}</Text>
             </TouchableOpacity>
           );
         })}

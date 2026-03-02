@@ -8,13 +8,18 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
-  StatusBar
+  StatusBar,
+  Alert
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
+import { useCartContext } from '../../Context/CartContext';
+import { useLocalization } from '../../Context/LocalizationContext';
 
 export default function ProductDetailScreen({ navigation, route }) {
   const { product } = route.params;
+  const { addToCart } = useCartContext();
+  const { t } = useLocalization();
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('M');
   const [selectedColor, setSelectedColor] = useState('pink');
@@ -36,14 +41,23 @@ export default function ProductDetailScreen({ navigation, route }) {
     'https://via.placeholder.com/300'
   ];
 
-  const handleAddToCart = () => {
-    console.log('Added to cart:', { ...product, quantity, selectedSize, selectedColor });
-    // Navigate to cart or show confirmation
+  const handleAddToCart = async () => {
+    await addToCart(product, quantity, selectedSize, selectedColor);
+    Alert.alert(t('addedToCart'), `${product.name} ${t('addedToYourCart')}`, [
+      { text: t('continue'), style: 'cancel' },
+      {
+        text: t('viewCart'),
+        onPress: () => navigation.navigate('Cart', { screen: 'CartMain' })
+      }
+    ]);
   };
 
-  const handleBuyNow = () => {
-    navigation.navigate('Payment', { 
-      items: [{ ...product, quantity, selectedSize, selectedColor }] 
+  const handleBuyNow = async () => {
+    const buyNowItem = { ...product, quantity, selectedSize, selectedColor };
+    await addToCart(product, quantity, selectedSize, selectedColor);
+    navigation.navigate('Cart', {
+      screen: 'Payment',
+      params: { items: [buyNowItem] }
     });
   };
 
@@ -103,8 +117,8 @@ export default function ProductDetailScreen({ navigation, route }) {
           <View style={styles.variationSection}>
             <TouchableOpacity style={styles.variationHeader}>
               <View>
-                <Text style={styles.variationLabel}>Color: {selectedColor}</Text>
-                <Text style={styles.variationValue}>Size: {selectedSize}</Text>
+                <Text style={styles.variationLabel}>{`${t('color')}: ${selectedColor}`}</Text>
+                <Text style={styles.variationValue}>{`${t('size')}: ${selectedSize}`}</Text>
               </View>
               <Icon name="chevron-right" size={20} color={COLORS.text.secondary} />
             </TouchableOpacity>
@@ -112,7 +126,7 @@ export default function ProductDetailScreen({ navigation, route }) {
 
           {/* Size Selection */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Select Size</Text>
+            <Text style={styles.sectionTitle}>{t('selectSize')}</Text>
             <View style={styles.sizeContainer}>
               {sizes.map((size) => (
                 <TouchableOpacity
@@ -136,7 +150,7 @@ export default function ProductDetailScreen({ navigation, route }) {
 
           {/* Color Selection */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Select Color</Text>
+            <Text style={styles.sectionTitle}>{t('selectColor')}</Text>
             <View style={styles.colorContainer}>
               {colors.map((color) => (
                 <TouchableOpacity
@@ -158,7 +172,7 @@ export default function ProductDetailScreen({ navigation, route }) {
 
           {/* Additional Images */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>More Images</Text>
+            <Text style={styles.sectionTitle}>{t('moreImages')}</Text>
             <FlatList
               data={productImages.slice(1)}
               horizontal
@@ -206,14 +220,14 @@ export default function ProductDetailScreen({ navigation, route }) {
           style={styles.addToCartButton}
           onPress={handleAddToCart}
         >
-          <Text style={styles.addToCartText}>Add to Cart</Text>
+          <Text style={styles.addToCartText}>{t('addToCartText')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
           style={styles.buyNowButton}
           onPress={handleBuyNow}
         >
-          <Text style={styles.buyNowText}>Buy Now</Text>
+          <Text style={styles.buyNowText}>{t('buyNow')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

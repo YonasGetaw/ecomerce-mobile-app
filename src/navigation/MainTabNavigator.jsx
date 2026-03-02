@@ -8,6 +8,7 @@ import CartStackNavigator from './CartStackNavigator';
 import FavoritesScreen from '../screens/main/FavoritesScreen';
 import { COLORS, SIZES } from '../utils/Colors';
 import { useCartContext } from '../Context/CartContext';
+import { useLocalization } from '../Context/LocalizationContext';
 import { View, Text, StyleSheet } from 'react-native';
 
 const Tab = createBottomTabNavigator();
@@ -28,6 +29,17 @@ function CartIcon({ color, size }) {
 }
 
 export default function MainTabNavigator() {
+  const { t } = useLocalization();
+
+  const getTabLabel = (routeName) => {
+    if (routeName === 'Home') return t('home');
+    if (routeName === 'Favorites') return t('favorites');
+    if (routeName === 'Categories') return t('categories');
+    if (routeName === 'Cart') return t('cart');
+    if (routeName === 'Profile') return t('profile');
+    return routeName;
+  };
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -62,6 +74,7 @@ export default function MainTabNavigator() {
           fontSize: 12,
           fontFamily: 'Poppins-Medium'
         },
+        tabBarLabel: getTabLabel(route.name),
         headerShown: false
       })}
     >

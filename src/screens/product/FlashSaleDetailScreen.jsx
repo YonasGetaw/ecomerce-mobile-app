@@ -14,11 +14,13 @@ import {
 import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import { FLASH_SALE_ITEMS } from '../../data/MockData';
+import { useLocalization } from '../../Context/LocalizationContext';
 
 const { width: screenWidth } = Dimensions.get('window');
 const DISCOUNT_TABS = ['all', '10', '20', '30', '40', '50'];
 
 export default function FlashSaleDetailScreen({ navigation }) {
+  const { t } = useLocalization();
   const [selectedTab, setSelectedTab] = useState('20');
   const [remainingSeconds, setRemainingSeconds] = useState((36 * 60) + 58);
   const [liveModalVisible, setLiveModalVisible] = useState(false);
@@ -93,8 +95,8 @@ export default function FlashSaleDetailScreen({ navigation }) {
 
           <View style={styles.titleRow}>
             <View>
-              <Text style={styles.title}>Flash Sale</Text>
-              <Text style={styles.subtitle}>Choose Your Discount</Text>
+              <Text style={styles.title}>{t('flashSale')}</Text>
+              <Text style={styles.subtitle}>{t('chooseYourDiscount')}</Text>
             </View>
 
             <View style={styles.clockRow}>
@@ -109,7 +111,7 @@ export default function FlashSaleDetailScreen({ navigation }) {
         <View style={styles.discountTabsWrap}>
           {DISCOUNT_TABS.map((tab) => {
             const isSelected = tab === selectedTab;
-            const label = tab === 'all' ? 'All' : `${tab}%`;
+            const label = tab === 'all' ? t('allTab') : `${tab}%`;
 
             return (
               <TouchableOpacity
@@ -141,7 +143,7 @@ export default function FlashSaleDetailScreen({ navigation }) {
                 <Image source={{ uri }} style={styles.heroImage} />
                 {index === heroImages.length - 1 && (
                   <View style={styles.liveBadge}>
-                    <Text style={styles.liveText}>Live</Text>
+                    <Text style={styles.liveText}>{t('live')}</Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -150,7 +152,7 @@ export default function FlashSaleDetailScreen({ navigation }) {
         </View>
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>20% Discount</Text>
+          <Text style={styles.sectionTitle}>{`20% ${t('saleLabel')}`}</Text>
           <TouchableOpacity>
             <Icon name="sliders" size={18} color={COLORS.text.secondary} />
           </TouchableOpacity>
@@ -209,7 +211,7 @@ export default function FlashSaleDetailScreen({ navigation }) {
               <Icon name="eye" size={17} color={COLORS.text.secondary} />
               <Text style={styles.liveViewerCount}>2,530</Text>
               <View style={styles.liveStateBadge}>
-                <Text style={styles.liveStateText}>Live</Text>
+                <Text style={styles.liveStateText}>{t('live')}</Text>
               </View>
               <TouchableOpacity style={styles.playButton}>
                 <Icon name="play" size={16} color={COLORS.primary} />
@@ -223,7 +225,7 @@ export default function FlashSaleDetailScreen({ navigation }) {
                 navigation.navigate('ProductSearch', { query: 'Flash Sale' });
               }}
             >
-              <Text style={styles.shopNowText}>Shop</Text>
+              <Text style={styles.shopNowText}>{t('shopNow')}</Text>
             </TouchableOpacity>
           </View>
         </SafeAreaView>

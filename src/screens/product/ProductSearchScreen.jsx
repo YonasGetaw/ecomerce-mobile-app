@@ -13,8 +13,10 @@ import {
 import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import { PRODUCTS } from '../../data/MockData';
+import { useLocalization } from '../../Context/LocalizationContext';
 
 export default function ProductSearchScreen({ navigation, route }) {
+  const { t } = useLocalization();
   const { query: initialQuery, category } = route.params || {};
   const [searchQuery, setSearchQuery] = useState(initialQuery || category || '');
   const [searchHistory, setSearchHistory] = useState([
@@ -67,10 +69,10 @@ export default function ProductSearchScreen({ navigation, route }) {
   const renderSearchHistory = () => (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Recent Searches</Text>
+        <Text style={styles.sectionTitle}>{t('recentSearches')}</Text>
         {searchHistory.length > 0 && (
           <TouchableOpacity onPress={clearHistory}>
-            <Text style={styles.clearText}>Clear All</Text>
+            <Text style={styles.clearText}>{t('clearAll')}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -96,7 +98,7 @@ export default function ProductSearchScreen({ navigation, route }) {
 
   const renderRecommendations = () => (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Recommendations</Text>
+      <Text style={styles.sectionTitle}>{t('recommendations')}</Text>
       <View style={styles.recommendationsGrid}>
         {recommendations.map((item, index) => (
           <TouchableOpacity
@@ -116,7 +118,7 @@ export default function ProductSearchScreen({ navigation, route }) {
 
   const renderDiscover = () => (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Discover</Text>
+      <Text style={styles.sectionTitle}>{t('discover')}</Text>
       <FlatList
         data={PRODUCTS.slice(0, 4)}
         horizontal
@@ -144,7 +146,7 @@ export default function ProductSearchScreen({ navigation, route }) {
       keyExtractor={(item) => item.id}
       ListHeaderComponent={
         <Text style={styles.resultsCount}>
-          {searchResults.length} results found
+          {`${searchResults.length} ${t('resultsFound')}`}
         </Text>
       }
       renderItem={({ item }) => (
@@ -165,9 +167,9 @@ export default function ProductSearchScreen({ navigation, route }) {
       ListEmptyComponent={
         <View style={styles.noResults}>
           <Icon name="search" size={50} color={COLORS.text.hint} />
-          <Text style={styles.noResultsTitle}>No results found</Text>
+          <Text style={styles.noResultsTitle}>{t('noResultsFound')}</Text>
           <Text style={styles.noResultsText}>
-            Try checking your spelling or using different keywords
+            {t('searchHint')}
           </Text>
         </View>
       }
@@ -189,7 +191,7 @@ export default function ProductSearchScreen({ navigation, route }) {
           <Icon name="search" size={20} color={COLORS.text.secondary} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search products..."
+            placeholder={t('searchProducts')}
             value={searchQuery}
             onChangeText={setSearchQuery}
             onSubmitEditing={performSearch}

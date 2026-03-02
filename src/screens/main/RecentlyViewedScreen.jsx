@@ -12,8 +12,10 @@ import {
 import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import { PRODUCTS } from '../../data/MockData';
+import { useLocalization } from '../../Context/LocalizationContext';
 
 export default function RecentlyViewedScreen({ navigation, route }) {
+  const { t } = useLocalization();
   const [selectedDay, setSelectedDay] = useState('Today');
   const [showDatePanel, setShowDatePanel] = useState(false);
   const [selectedDate, setSelectedDate] = useState(18);
@@ -35,7 +37,7 @@ export default function RecentlyViewedScreen({ navigation, route }) {
       activeOpacity={0.9}
     >
       <Image source={{ uri: item.image }} style={styles.image} />
-      <Text numberOfLines={2} style={styles.desc}>{item.description || 'Lorem ipsum dolor sit amet consectetur'}</Text>
+      <Text numberOfLines={2} style={styles.desc}>{item.description || t('loremShort')}</Text>
       <Text style={styles.price}>${Number(item.price).toFixed(2)}</Text>
     </TouchableOpacity>
   );
@@ -99,7 +101,7 @@ export default function RecentlyViewedScreen({ navigation, route }) {
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
 
       <View style={styles.headerRow}>
-        <Text style={styles.title}>Recently viewed</Text>
+        <Text style={styles.title}>{t('recentlyViewed')}</Text>
       </View>
 
       <View style={styles.filtersRow}>
@@ -110,7 +112,7 @@ export default function RecentlyViewedScreen({ navigation, route }) {
             setShowDatePanel(false);
           }}
         >
-          <Text style={[styles.dayChipText, selectedDay === 'Today' && styles.dayChipTextActive]}>Today</Text>
+          <Text style={[styles.dayChipText, selectedDay === 'Today' && styles.dayChipTextActive]}>{t('today')}</Text>
           <View style={styles.dayCheck}>
             <Icon name="check" size={12} color={COLORS.white} />
           </View>
@@ -120,7 +122,7 @@ export default function RecentlyViewedScreen({ navigation, route }) {
           style={[styles.dayChip, selectedDay === 'Yesterday' && styles.dayChipActive]}
           onPress={() => setSelectedDay('Yesterday')}
         >
-          <Text style={[styles.dayChipText, selectedDay === 'Yesterday' && styles.dayChipTextActive]}>Yesterday</Text>
+          <Text style={[styles.dayChipText, selectedDay === 'Yesterday' && styles.dayChipTextActive]}>{t('yesterday')}</Text>
           <TouchableOpacity
             style={styles.dayCheck}
             onPress={() => {
