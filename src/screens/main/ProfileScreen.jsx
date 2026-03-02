@@ -5,7 +5,7 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
-  Image,
+  Image as RNImage,
   TouchableOpacity,
   FlatList,
   StatusBar,
@@ -18,6 +18,18 @@ import { Camera } from 'expo-camera';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import { PRODUCTS, FLASH_SALE_ITEMS } from '../../data/MockData';
 import { useImagePicker } from '../../hooks/useImagePicker';
+
+const PROFILE_IMAGE_BLUR = 30;
+const PROFILE_IMAGE_OVERLAY = 'rgba(0,0,0,0.102)';
+
+function BlurredImage({ source, style }) {
+  return (
+    <View style={[style, styles.blurredImageWrap]}>
+      <RNImage source={source} style={styles.blurredImage} blurRadius={PROFILE_IMAGE_BLUR} />
+      <View pointerEvents="none" style={styles.blurredImageOverlay} />
+    </View>
+  );
+}
 
 export default function ProfileScreen({ navigation }) {
   const { pickFromCamera, pickFromGallery } = useImagePicker();
@@ -228,7 +240,7 @@ export default function ProfileScreen({ navigation }) {
         <View style={styles.topRow}>
           <View style={styles.leftTopRow}>
             <TouchableOpacity onPress={onAvatarPress} style={styles.avatarWrap}>
-              <Image source={{ uri: avatarUri }} style={styles.avatar} />
+              <BlurredImage source={{ uri: avatarUri }} style={styles.avatar} />
             </TouchableOpacity>
             <View style={styles.activityBadge}><Text style={styles.activityText}>My Activity</Text></View>
           </View>
@@ -256,7 +268,7 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.recentTitle}>Recently viewed</Text>
           <View style={styles.recentRow}>
             {recentViewed.slice(0, 5).map((item, idx) => (
-              <Image key={`recent-${idx}`} source={{ uri: item }} style={styles.recentAvatar} />
+              <BlurredImage key={`recent-${idx}`} source={{ uri: item }} style={styles.recentAvatar} />
             ))}
           </View>
         </View>
@@ -301,7 +313,7 @@ export default function ProfileScreen({ navigation }) {
                 onPress={() => (index === 0 ? openLivePage() : handleStoryPress(item))}
                 activeOpacity={0.9}
               >
-                <Image source={{ uri: item.image }} style={styles.storyImage} />
+                <BlurredImage source={{ uri: item.image }} style={styles.storyImage} />
                 {index === 2 && (
                   <View style={styles.playCircle}><Icon name="play" size={18} color={COLORS.white} /></View>
                 )}
@@ -329,7 +341,7 @@ export default function ProfileScreen({ navigation }) {
             contentContainerStyle={styles.newItemsListContent}
             renderItem={({ item }) => (
               <TouchableOpacity style={styles.newItemCard} onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}>
-                <Image source={{ uri: item.image }} style={styles.newItemImage} />
+                <BlurredImage source={{ uri: item.image }} style={styles.newItemImage} />
                 <Text style={styles.newItemDesc} numberOfLines={2}>Lorem ipsum dolor sit amet consectetur.</Text>
                 <Text style={styles.newItemPrice}>${Number(item.price).toFixed(2).replace('.', ',')}</Text>
               </TouchableOpacity>
@@ -346,7 +358,7 @@ export default function ProfileScreen({ navigation }) {
             showsHorizontalScrollIndicator={false}
             renderItem={({ item, index }) => (
               <TouchableOpacity style={styles.popularCard} onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}>
-                <Image source={{ uri: item.image }} style={styles.popularImage} />
+                <BlurredImage source={{ uri: item.image }} style={styles.popularImage} />
                 <View style={styles.popularBottom}>
                   <Text style={styles.popularNumber}>1780</Text>
                   <Icon name="heart" size={12} color={COLORS.primary} />
@@ -364,7 +376,7 @@ export default function ProfileScreen({ navigation }) {
               <TouchableOpacity key={category.id} style={styles.categoryCard} onPress={() => navigation.navigate('Categories')}>
                 <View style={styles.categoryMosaic}>
                   {category.images.map((imageUri, index) => (
-                    <Image key={`${category.id}-${index}`} source={{ uri: imageUri }} style={styles.mosaicImage} />
+                    <BlurredImage key={`${category.id}-${index}`} source={{ uri: imageUri }} style={styles.mosaicImage} />
                   ))}
                 </View>
                 <View style={styles.categoryFooter}>
@@ -389,7 +401,7 @@ export default function ProfileScreen({ navigation }) {
           <View style={styles.flashGrid}>
             {[...FLASH_SALE_ITEMS, ...FLASH_SALE_ITEMS].slice(0, 6).map((item, index) => (
               <TouchableOpacity key={`${item.id}-${index}`} style={styles.flashCard} onPress={() => navigation.navigate('Home', { screen: 'FlashSaleDetail' })}>
-                <Image source={{ uri: `https://loremflickr.com/300/300/fashion,sale?lock=${1970 + index}` }} style={styles.flashImage} />
+                <BlurredImage source={{ uri: `https://loremflickr.com/300/300/fashion,sale?lock=${1970 + index}` }} style={styles.flashImage} />
                 <View style={styles.flashDiscount}><Text style={styles.flashDiscountText}>-20%</Text></View>
               </TouchableOpacity>
             ))}
@@ -400,7 +412,7 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.sectionTitle}>Top Products</Text>
           <View style={styles.topProductsRow}>
             {topProducts.slice(0, 5).map((item, idx) => (
-              <Image key={`top-${idx}`} source={{ uri: item }} style={styles.topProductCircle} />
+              <BlurredImage key={`top-${idx}`} source={{ uri: item }} style={styles.topProductCircle} />
             ))}
           </View>
         </View>
@@ -413,7 +425,7 @@ export default function ProfileScreen({ navigation }) {
           <View style={styles.justGrid}>
             {homeProducts.slice(0, 6).map((item, index) => (
               <TouchableOpacity key={`just-${item.id}-${index}`} style={styles.justCard} onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}>
-                <Image source={{ uri: `https://loremflickr.com/450/450/fashion,style?lock=${1980 + index}` }} style={styles.justImage} />
+                <BlurredImage source={{ uri: `https://loremflickr.com/450/450/fashion,style?lock=${1980 + index}` }} style={styles.justImage} />
                 <Text style={styles.justDesc} numberOfLines={2}>Lorem ipsum dolor sit amet consectetur</Text>
                 <Text style={styles.justPrice}>$17,00</Text>
               </TouchableOpacity>
@@ -473,7 +485,7 @@ export default function ProfileScreen({ navigation }) {
           {storyStep === 0 ? (
             <View style={styles.storyFlowCard}>
               <TouchableOpacity activeOpacity={0.95} style={styles.storyFlowImageWrap} onPress={openStoryProductStep}>
-                {activeStory ? <Image source={{ uri: activeStory.image }} style={styles.storyFlowImage} /> : null}
+                {activeStory ? <BlurredImage source={{ uri: activeStory.image }} style={styles.storyFlowImage} /> : null}
                 <TouchableOpacity style={[styles.storyFlowDot, styles.storyFlowDotLeft]} onPress={openStoryProductStep} />
                 <TouchableOpacity style={[styles.storyFlowDot, styles.storyFlowDotRight]} onPress={openStoryProductStep} />
               </TouchableOpacity>
@@ -486,7 +498,7 @@ export default function ProfileScreen({ navigation }) {
           ) : (
             <View style={styles.storyFlowCard}>
               <View style={styles.storyFlowProductImageWrap}>
-                <Image source={{ uri: 'https://loremflickr.com/500/760/fashion,yellow,woman?lock=2014' }} style={styles.storyFlowProductImage} />
+                <BlurredImage source={{ uri: 'https://loremflickr.com/500/760/fashion,yellow,woman?lock=2014' }} style={styles.storyFlowProductImage} />
               </View>
               <View style={styles.storyFlowProductRow}>
                 <Text style={styles.storyFlowProductText}>Lorem ipsum dolor sit amet,{`\n`}consectetur adipiscing elit.</Text>
@@ -508,6 +520,17 @@ export default function ProfileScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  blurredImageWrap: {
+    overflow: 'hidden'
+  },
+  blurredImage: {
+    width: '100%',
+    height: '100%'
+  },
+  blurredImageOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: PROFILE_IMAGE_OVERLAY
+  },
   container: {
     flex: 1,
     backgroundColor: COLORS.background
