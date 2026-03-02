@@ -136,6 +136,15 @@ export default function ProfileScreen({ navigation }) {
     SAMPLE_PROFILE_IMAGES[5]
   ];
 
+  const justForYouItems = [
+    { id: 'j1', image: SAMPLE_PROFILE_IMAGES[0], description: 'Lorem ipsum dolor sit amet consectetur', price: '$17,00' },
+    { id: 'j2', image: SAMPLE_PROFILE_IMAGES[1], description: 'Lorem ipsum dolor sit amet consectetur', price: '$17,00' },
+    { id: 'j3', image: SAMPLE_PROFILE_IMAGES[2], description: 'Lorem ipsum dolor sit amet consectetur', price: '$17,00' },
+    { id: 'j4', image: SAMPLE_PROFILE_IMAGES[3], description: 'Lorem ipsum dolor sit amet consectetur', price: '$17,00' },
+    { id: 'j5', image: SAMPLE_PROFILE_IMAGES[4], description: 'Lorem ipsum dolor sit amet consectetur', price: '$17,00' },
+    { id: 'j6', image: SAMPLE_PROFILE_IMAGES[5], description: 'Lorem ipsum dolor sit amet consectetur', price: '$17,00' }
+  ];
+
   const homeProducts = useMemo(
     () => PRODUCTS.map((item, index) => ({
       ...item,
@@ -431,11 +440,13 @@ export default function ProfileScreen({ navigation }) {
             <Icon name="star" size={12} color={COLORS.primary} />
           </View>
           <View style={styles.justGrid}>
-            {homeProducts.slice(0, 6).map((item, index) => (
-              <TouchableOpacity key={`just-${item.id}-${index}`} style={styles.justCard} onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: item } })}>
-                <BlurredImage source={SAMPLE_PROFILE_IMAGES[index % SAMPLE_PROFILE_IMAGES.length]} style={styles.justImage} />
-                <Text style={styles.justDesc} numberOfLines={2}>Lorem ipsum dolor sit amet consectetur</Text>
-                <Text style={styles.justPrice}>$17,00</Text>
+            {justForYouItems.map((item, index) => (
+              <TouchableOpacity key={item.id} style={styles.justCard} onPress={() => navigation.navigate('Home', { screen: 'ProductDetail', params: { product: homeProducts[index % homeProducts.length] } })}>
+                <View style={styles.justImageWrap}>
+                  <RNImage source={item.image} style={styles.justImage} />
+                </View>
+                <Text style={styles.justDesc} numberOfLines={2}>{item.description}</Text>
+                <Text style={styles.justPrice}>{item.price}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -982,23 +993,26 @@ const styles = StyleSheet.create({
   },
   justCard: {
     width: '48.5%',
-    marginBottom: SIZES.small
+    marginBottom: 12
+  },
+  justImageWrap: {
+    borderRadius: 10,
+    overflow: 'hidden',
+    marginBottom: 8
   },
   justImage: {
     width: '100%',
-    height: 96,
-    borderRadius: SIZES.radius.small,
-    marginBottom: 4
+    height: 164
   },
   justDesc: {
-    fontSize: 9,
-    lineHeight: 12,
+    fontSize: 11,
+    lineHeight: 16,
     color: COLORS.text.secondary,
     fontFamily: FONTS.regular
   },
   justPrice: {
-    marginTop: 3,
-    fontSize: 10,
+    marginTop: 6,
+    fontSize: 16,
     color: COLORS.text.primary,
     fontFamily: FONTS.bold
   },
