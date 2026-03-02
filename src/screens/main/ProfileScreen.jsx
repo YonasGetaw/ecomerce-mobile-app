@@ -52,9 +52,9 @@ export default function ProfileScreen({ navigation }) {
   const [storyStep, setStoryStep] = useState(0);
 
   const orderTabs = [
-    { key: 'pay', label: 'To Pay' },
-    { key: 'receive', label: 'To Recieve' },
-    { key: 'review', label: 'To Review' }
+    { key: 'pay', label: 'To Pay', image: SAMPLE_PROFILE_IMAGES[0] },
+    { key: 'receive', label: 'To Recieve', image: SAMPLE_PROFILE_IMAGES[1] },
+    { key: 'review', label: 'To Review', image: SAMPLE_PROFILE_IMAGES[2] }
   ];
 
   const recentViewed = [
@@ -301,6 +301,7 @@ export default function ProfileScreen({ navigation }) {
                   onPress={() => setSelectedOrderTab(tab.key)}
                   activeOpacity={0.85}
                 >
+                  <BlurredImage source={tab.image} style={styles.orderChipImage} />
                   <Text style={styles.orderChipText}>{tab.label}</Text>
                 </TouchableOpacity>
               ))}
@@ -746,8 +747,18 @@ const styles = StyleSheet.create({
     height: 34,
     borderRadius: 17,
     backgroundColor: COLORS.primaryLight,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    paddingHorizontal: 6
+  },
+  orderChipImage: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    marginRight: 5,
+    borderWidth: 1,
+    borderColor: COLORS.white
   },
   orderChipText: {
     fontSize: 12,
