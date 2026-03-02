@@ -2,18 +2,18 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Feather';
 import HomeStackNavigator from './HomeStackNavigator';
-import ProfileScreen from '../screens/main/ProfileScreen';
+import ProfileStackNavigator from './ProfileStackNavigator';
 import CategoriesScreen from '../screens/main/CategoriesScreen';
-import CartScreen from '../screens/main/CartScreen';
+import CartStackNavigator from './CartStackNavigator';
 import FavoritesScreen from '../screens/main/FavoritesScreen';
-import { COLORS, SIZES } from '../utils/colors';
-import { useCart } from '../hooks/useCart';
+import { COLORS, SIZES } from '../utils/Colors';
+import { useCartContext } from '../Context/CartContext';
 import { View, Text, StyleSheet } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 
 function CartIcon({ color, size }) {
-  const { cartCount } = useCart();
+  const { cartCount } = useCartContext();
   
   return (
     <View>
@@ -68,8 +68,8 @@ export default function MainTabNavigator() {
       <Tab.Screen name="Home" component={HomeStackNavigator} />
       <Tab.Screen name="Favorites" component={FavoritesScreen} />
       <Tab.Screen name="Categories" component={CategoriesScreen} />
-      <Tab.Screen name="Cart" component={CartScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Cart" component={CartStackNavigator} />
+      <Tab.Screen name="Profile" component={ProfileStackNavigator} />
     </Tab.Navigator>
   );
 }

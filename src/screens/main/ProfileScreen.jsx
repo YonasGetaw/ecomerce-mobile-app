@@ -267,7 +267,9 @@ export default function ProfileScreen({ navigation }) {
               <Icon name="maximize" size={16} color={COLORS.primary} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.iconButton}><Icon name="list" size={16} color={COLORS.primary} /></TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton}><Icon name="settings" size={16} color={COLORS.primary} /></TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Settings')}>
+              <Icon name="settings" size={16} color={COLORS.primary} />
+            </TouchableOpacity>
           </View>
         </View>
 
