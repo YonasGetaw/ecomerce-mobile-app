@@ -796,30 +796,30 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bold
   },
   popularCard: {
-    width: 78,
+    width: 92,
     marginRight: SIZES.small,
     borderRadius: SIZES.radius.small,
     backgroundColor: '#F5F5F6',
-    padding: 4
+    padding: 5
   },
   popularImage: {
     width: '100%',
-    height: 60,
+    height: 88,
     borderRadius: SIZES.radius.small
   },
   popularBottom: {
-    marginTop: 4,
+    marginTop: 6,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between'
   },
   popularNumber: {
-    fontSize: 10,
+    fontSize: 12,
     color: COLORS.text.primary,
     fontFamily: FONTS.bold
   },
   popularType: {
-    fontSize: 10,
+    fontSize: 12,
     color: COLORS.text.secondary,
     fontFamily: FONTS.medium
   },
