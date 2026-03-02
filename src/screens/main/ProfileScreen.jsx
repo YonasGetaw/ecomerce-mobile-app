@@ -22,6 +22,14 @@ import { useImagePicker } from '../../hooks/useImagePicker';
 const PROFILE_IMAGE_BLUR = 30;
 const PROFILE_IMAGE_OVERLAY = 'rgba(0,0,0,0.102)';
 const SAMPLE_IMAGE = 'https://picsum.photos/id/1027/600/600';
+const SAMPLE_PROFILE_IMAGES = [
+  'https://picsum.photos/id/1027/600/600',
+  'https://picsum.photos/id/1011/600/600',
+  'https://picsum.photos/id/1005/600/600',
+  'https://picsum.photos/id/1012/600/600',
+  'https://picsum.photos/id/1062/600/600',
+  'https://picsum.photos/id/1001/600/600'
+];
 
 function BlurredImage({ source, style }) {
   return (
@@ -51,27 +59,27 @@ export default function ProfileScreen({ navigation }) {
   ];
 
   const recentViewed = [
-    SAMPLE_IMAGE,
-    'https://loremflickr.com/120/120/fashion,girl?lock=1911',
-    'https://loremflickr.com/120/120/model,portrait?lock=1912',
-    'https://loremflickr.com/120/120/woman,casual?lock=1913',
-    'https://loremflickr.com/120/120/fashion,photo?lock=1914'
+    SAMPLE_PROFILE_IMAGES[0],
+    SAMPLE_PROFILE_IMAGES[1],
+    SAMPLE_PROFILE_IMAGES[2],
+    SAMPLE_PROFILE_IMAGES[3],
+    SAMPLE_PROFILE_IMAGES[4]
   ];
 
   const stories = [
-    { id: '1', title: 'Live', image: 'https://loremflickr.com/300/500/shopping,woman?lock=1920' },
-    { id: '2', title: 'New', image: 'https://loremflickr.com/300/500/fashion,pink?lock=1921' },
-    { id: '3', title: 'Top', image: 'https://loremflickr.com/300/500/model,beauty?lock=1922' },
-    { id: '4', title: 'Hot', image: 'https://loremflickr.com/300/500/shop,bag?lock=1923' }
+    { id: '1', title: 'Live', image: SAMPLE_PROFILE_IMAGES[0] },
+    { id: '2', title: 'New', image: SAMPLE_PROFILE_IMAGES[1] },
+    { id: '3', title: 'Top', image: SAMPLE_PROFILE_IMAGES[2] },
+    { id: '4', title: 'Hot', image: SAMPLE_PROFILE_IMAGES[3] }
   ];
 
   const productImages = [
-    'https://loremflickr.com/500/500/sunglasses,woman?lock=1930',
-    'https://loremflickr.com/500/500/woman,portrait?lock=1931',
-    'https://loremflickr.com/500/500/model,green-shirt?lock=1932',
-    'https://loremflickr.com/500/500/fashion,woman?lock=1933',
-    'https://loremflickr.com/500/500/shopper,bag?lock=1934',
-    'https://loremflickr.com/500/500/fashion,pink?lock=1935'
+    SAMPLE_PROFILE_IMAGES[0],
+    SAMPLE_PROFILE_IMAGES[1],
+    SAMPLE_PROFILE_IMAGES[2],
+    SAMPLE_PROFILE_IMAGES[3],
+    SAMPLE_PROFILE_IMAGES[4],
+    SAMPLE_PROFILE_IMAGES[5]
   ];
 
   const categories = [
@@ -122,11 +130,11 @@ export default function ProfileScreen({ navigation }) {
   ];
 
   const topProducts = [
-    'https://loremflickr.com/140/140/bag,product?lock=1960',
-    'https://loremflickr.com/140/140/watch,product?lock=1961',
-    'https://loremflickr.com/140/140/tshirt,product?lock=1962',
-    'https://loremflickr.com/140/140/shoes,product?lock=1963',
-    'https://loremflickr.com/140/140/woman,profile?lock=1964'
+    SAMPLE_PROFILE_IMAGES[1],
+    SAMPLE_PROFILE_IMAGES[2],
+    SAMPLE_PROFILE_IMAGES[3],
+    SAMPLE_PROFILE_IMAGES[4],
+    SAMPLE_PROFILE_IMAGES[5]
   ];
 
   const homeProducts = useMemo(
