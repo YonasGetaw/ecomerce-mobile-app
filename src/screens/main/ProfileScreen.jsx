@@ -25,6 +25,13 @@ export default function ProfileScreen({ navigation }) {
   const [scannerVisible, setScannerVisible] = useState(false);
   const [cameraPermission, setCameraPermission] = useState(null);
   const [isScanned, setIsScanned] = useState(false);
+  const [selectedOrderTab, setSelectedOrderTab] = useState('receive');
+
+  const orderTabs = [
+    { key: 'pay', label: 'To Pay' },
+    { key: 'receive', label: 'To Recieve' },
+    { key: 'review', label: 'To Review' }
+  ];
 
   const recentViewed = [
     'https://loremflickr.com/120/120/woman,style?lock=1910',
@@ -210,11 +217,25 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.sectionTitle}>My Orders</Text>
           <View style={styles.ordersWrap}>
             <View style={styles.ordersRow}>
-              <TouchableOpacity style={styles.orderChip}><Text style={styles.orderChipText}>To Pay</Text></TouchableOpacity>
-              <TouchableOpacity style={styles.orderChip}><Text style={styles.orderChipText}>To Recieve</Text></TouchableOpacity>
-              <TouchableOpacity style={styles.orderChip}><Text style={styles.orderChipText}>To Review</Text></TouchableOpacity>
+              {orderTabs.map((tab) => (
+                <TouchableOpacity
+                  key={tab.key}
+                  style={styles.orderChip}
+                  onPress={() => setSelectedOrderTab(tab.key)}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.orderChipText}>{tab.label}</Text>
+                </TouchableOpacity>
+              ))}
             </View>
-            <View style={styles.orderDot} />
+            <View
+              style={[
+                styles.orderDot,
+                selectedOrderTab === 'pay' && styles.orderDotPay,
+                selectedOrderTab === 'receive' && styles.orderDotReceive,
+                selectedOrderTab === 'review' && styles.orderDotReview
+              ]}
+            />
           </View>
         </View>
 
@@ -558,11 +579,19 @@ const styles = StyleSheet.create({
   orderDot: {
     position: 'absolute',
     top: -3,
-    left: '66%',
     width: 10,
     height: 10,
     borderRadius: 5,
     backgroundColor: COLORS.success
+  },
+  orderDotPay: {
+    left: '11%'
+  },
+  orderDotReceive: {
+    left: '45%'
+  },
+  orderDotReview: {
+    left: '79%'
   },
   storyCard: {
     width: 104,
