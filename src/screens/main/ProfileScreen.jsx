@@ -26,6 +26,8 @@ export default function ProfileScreen({ navigation }) {
   const [cameraPermission, setCameraPermission] = useState(null);
   const [isScanned, setIsScanned] = useState(false);
   const [selectedOrderTab, setSelectedOrderTab] = useState('receive');
+  const [storyModalVisible, setStoryModalVisible] = useState(false);
+  const [activeStory, setActiveStory] = useState(null);
 
   const orderTabs = [
     { key: 'pay', label: 'To Pay' },
@@ -160,6 +162,16 @@ export default function ProfileScreen({ navigation }) {
     }
   };
 
+  const handleStoryPress = (story) => {
+    setActiveStory(story);
+    setStoryModalVisible(true);
+  };
+
+  const closeStoryModal = () => {
+    setStoryModalVisible(false);
+    setActiveStory(null);
+  };
+
   const renderSectionHeader = (title, onSeeAll) => (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -246,10 +258,13 @@ export default function ProfileScreen({ navigation }) {
             data={stories}
             keyExtractor={(item) => item.id}
             showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.storiesContent}
             renderItem={({ item, index }) => (
-              <TouchableOpacity style={styles.storyCard}>
+              <TouchableOpacity style={styles.storyCard} onPress={() => handleStoryPress(item)} activeOpacity={0.9}>
                 <Image source={{ uri: item.image }} style={styles.storyImage} />
-                <View style={styles.playCircle}><Icon name="play" size={16} color={COLORS.white} /></View>
+                {index === 2 && (
+                  <View style={styles.playCircle}><Icon name="play" size={18} color={COLORS.white} /></View>
+                )}
                 {index === 0 && (
                   <View style={styles.storyBadge}><Text style={styles.storyBadgeText}>Live</Text></View>
                 )}
@@ -400,6 +415,21 @@ export default function ProfileScreen({ navigation }) {
           </SafeAreaView>
         </Modal>
       )}
+
+      <Modal visible={storyModalVisible} transparent animationType="fade" onRequestClose={closeStoryModal}>
+        <View style={styles.storyModalOverlay}>
+          <TouchableOpacity style={styles.storyModalBackdrop} activeOpacity={1} onPress={closeStoryModal} />
+          <View style={styles.storyModalCard}>
+            {activeStory ? <Image source={{ uri: activeStory.image }} style={styles.storyModalImage} /> : null}
+            <View style={styles.storyModalTopRow}>
+              <View style={styles.storyModalBadge}><Text style={styles.storyModalBadgeText}>{activeStory?.title || 'Story'}</Text></View>
+              <TouchableOpacity style={styles.storyModalClose} onPress={closeStoryModal}>
+                <Icon name="x" size={16} color={COLORS.white} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -593,11 +623,14 @@ const styles = StyleSheet.create({
   orderDotReview: {
     left: '79%'
   },
+  storiesContent: {
+    paddingRight: SIZES.medium
+  },
   storyCard: {
-    width: 104,
-    height: 168,
-    borderRadius: SIZES.radius.large,
-    marginRight: 8,
+    width: 98,
+    height: 160,
+    borderRadius: 9,
+    marginRight: 5,
     overflow: 'hidden',
     position: 'relative'
   },
@@ -609,12 +642,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: '50%',
     top: '50%',
-    marginLeft: -14,
-    marginTop: -14,
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: 'rgba(255,255,255,0.3)',
+    marginLeft: -18,
+    marginTop: -18,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.28)',
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -623,13 +656,14 @@ const styles = StyleSheet.create({
     left: 6,
     top: 6,
     backgroundColor: COLORS.success,
-    borderRadius: 10,
-    paddingHorizontal: 7,
-    paddingVertical: 2
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 3
   },
   storyBadgeText: {
     color: COLORS.white,
-    fontSize: 10,
+    fontSize: 13,
+    lineHeight: 14,
     fontFamily: FONTS.bold
   },
   newItemCard: {
@@ -881,5 +915,57 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontFamily: FONTS.medium,
     fontSize: FONTS.sizes.medium
+  },
+  storyModalOverlay: {
+    flex: 1,
+    backgroundColor: COLORS.overlay,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  storyModalBackdrop: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0
+  },
+  storyModalCard: {
+    width: '86%',
+    height: '72%',
+    borderRadius: 14,
+    overflow: 'hidden',
+    backgroundColor: COLORS.surface
+  },
+  storyModalImage: {
+    width: '100%',
+    height: '100%'
+  },
+  storyModalTopRow: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    right: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  storyModalBadge: {
+    backgroundColor: COLORS.success,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 4
+  },
+  storyModalBadgeText: {
+    color: COLORS.white,
+    fontFamily: FONTS.bold,
+    fontSize: 12
+  },
+  storyModalClose: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: COLORS.black,
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 });
