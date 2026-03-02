@@ -5,6 +5,7 @@ import {
   StyleSheet,
   SafeAreaView,
   SectionList,
+  TextInput,
   TouchableOpacity,
   StatusBar
 } from 'react-native';
@@ -17,9 +18,14 @@ import { useLocalization } from '../../Context/LocalizationContext';
 export default function CountrySelectionScreen({ navigation, route }) {
   const { t } = useLocalization();
   const [selectedCountry, setSelectedCountry] = useState(route?.params?.selectedCountry || 'India');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const sections = useMemo(() => {
-    const sorted = [...COUNTRIES].sort((a, b) => a.localeCompare(b));
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    const filteredCountries = normalizedQuery
+      ? COUNTRIES.filter((country) => country.toLowerCase().includes(normalizedQuery))
+      : COUNTRIES;
+    const sorted = [...filteredCountries].sort((a, b) => a.localeCompare(b));
     const grouped = sorted.reduce((acc, country) => {
       const letter = country[0].toUpperCase();
       if (!acc[letter]) {
@@ -32,7 +38,7 @@ export default function CountrySelectionScreen({ navigation, route }) {
     return Object.keys(grouped)
       .sort()
       .map((letter) => ({ title: letter, data: grouped[letter] }));
-  }, []);
+  }, [searchQuery]);
 
   const onSelectCountry = async (country) => {
     setSelectedCountry(country);
@@ -71,6 +77,19 @@ export default function CountrySelectionScreen({ navigation, route }) {
       </View>
 
       <Text style={styles.fieldLabel}>{t('country', 'Country')}</Text>
+
+      <View style={styles.searchBox}>
+        <Icon name="search" size={16} color={COLORS.text.secondary} />
+        <TextInput
+          style={styles.searchInput}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder={t('searchCountry', 'Search country')}
+          placeholderTextColor={COLORS.text.hint}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
+      </View>
 
       <SectionList
         sections={sections}
@@ -116,10 +135,27 @@ const styles = StyleSheet.create({
   },
   fieldLabel: {
     marginTop: 6,
-    marginBottom: 10,
+    marginBottom: 8,
     fontSize: FONTS.sizes.large,
     fontFamily: FONTS.medium,
     color: COLORS.text.primary
+  },
+  searchBox: {
+    height: 42,
+    borderRadius: 8,
+    backgroundColor: COLORS.white,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10
+  },
+  searchInput: {
+    flex: 1,
+    marginLeft: 8,
+    fontSize: 14,
+    fontFamily: FONTS.regular,
+    color: COLORS.text.primary,
+    paddingVertical: 0
   },
   listContent: {
     paddingBottom: SIZES.large
