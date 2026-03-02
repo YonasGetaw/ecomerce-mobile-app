@@ -199,14 +199,11 @@ export default function ProfileScreen({ navigation }) {
 
         <View style={styles.recentBlock}>
           <Text style={styles.recentTitle}>Recently viewed</Text>
-          <FlatList
-            horizontal
-            data={recentViewed}
-            keyExtractor={(item, idx) => `recent-${idx}`}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.recentListContent}
-            renderItem={({ item }) => <Image source={{ uri: item }} style={styles.recentAvatar} />}
-          />
+          <View style={styles.recentRow}>
+            {recentViewed.slice(0, 5).map((item, idx) => (
+              <Image key={`recent-${idx}`} source={{ uri: item }} style={styles.recentAvatar} />
+            ))}
+          </View>
         </View>
 
         <View style={styles.sectionBlock}>
@@ -497,6 +494,12 @@ const styles = StyleSheet.create({
   recentListContent: {
     paddingRight: 6
   },
+  recentRow: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -520,10 +523,9 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.medium
   },
   recentAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    marginRight: 12,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     borderWidth: 2,
     borderColor: COLORS.white,
     shadowColor: COLORS.black,
