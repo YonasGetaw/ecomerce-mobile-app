@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, StatusBar, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, StatusBar, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import { useLocalization } from '../../Context/LocalizationContext';
@@ -18,13 +18,15 @@ function SettingRow({ title, value, onPress }) {
 
 export default function SettingsScreen({ navigation }) {
   const { language, setLanguage, t } = useLocalization();
+  const [languageModalVisible, setLanguageModalVisible] = useState(false);
 
   const onPressLanguage = () => {
-    Alert.alert(t('chooseLanguage', 'Choose Language'), '', [
-      { text: t('english', 'English'), onPress: () => setLanguage('en') },
-      { text: t('amharic', 'Amharic'), onPress: () => setLanguage('am') },
-      { text: 'Cancel', style: 'cancel' }
-    ]);
+    setLanguageModalVisible(true);
+  };
+
+  const chooseLanguage = async (nextLanguage) => {
+    await setLanguage(nextLanguage);
+    setLanguageModalVisible(false);
   };
 
   return (
@@ -66,6 +68,32 @@ export default function SettingsScreen({ navigation }) {
         <Text style={styles.footerBrand}>Slada</Text>
         <Text style={styles.footerVersion}>Version 1.0 April, 2020</Text>
       </View>
+
+      <Modal
+        visible={languageModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setLanguageModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={() => setLanguageModalVisible(false)} />
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>{t('chooseLanguage', 'Choose Language')}</Text>
+
+            <TouchableOpacity style={styles.modalOption} onPress={() => chooseLanguage('en')}>
+              <Text style={styles.modalOptionText}>{t('english', 'English')}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.modalOption} onPress={() => chooseLanguage('am')}>
+              <Text style={styles.modalOptionText}>{t('amharic', 'Amharic')}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.modalCancel} onPress={() => setLanguageModalVisible(false)}>
+              <Text style={styles.modalCancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -146,5 +174,51 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: COLORS.text.secondary,
     fontFamily: FONTS.regular
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  modalBackdrop: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0
+  },
+  modalCard: {
+    width: '84%',
+    borderRadius: 12,
+    backgroundColor: COLORS.white,
+    paddingVertical: 14,
+    paddingHorizontal: 14
+  },
+  modalTitle: {
+    fontSize: 16,
+    color: COLORS.text.primary,
+    fontFamily: FONTS.bold,
+    marginBottom: 8
+  },
+  modalOption: {
+    height: 44,
+    justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0'
+  },
+  modalOptionText: {
+    fontSize: 14,
+    color: COLORS.text.primary,
+    fontFamily: FONTS.medium
+  },
+  modalCancel: {
+    height: 40,
+    justifyContent: 'center'
+  },
+  modalCancelText: {
+    fontSize: 13,
+    color: COLORS.text.secondary,
+    fontFamily: FONTS.medium
   }
 });
