@@ -170,6 +170,17 @@ export default function ProfileScreen({ navigation }) {
     setStoryModalVisible(true);
   };
 
+  const openLivePage = () => {
+    navigation.dispatch(
+      CommonActions.navigate({
+        name: 'Home',
+        params: { screen: 'FlashSaleDetail' }
+      })
+    );
+
+    navigation.navigate('Home', { screen: 'FlashSaleDetail' });
+  };
+
   const closeStoryModal = () => {
     setStoryModalVisible(false);
     setActiveStory(null);
@@ -285,7 +296,11 @@ export default function ProfileScreen({ navigation }) {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.storiesContent}
             renderItem={({ item, index }) => (
-              <TouchableOpacity style={styles.storyCard} onPress={() => handleStoryPress(item, index)} activeOpacity={0.9}>
+              <TouchableOpacity
+                style={styles.storyCard}
+                onPress={() => (index === 0 ? openLivePage() : handleStoryPress(item))}
+                activeOpacity={0.9}
+              >
                 <Image source={{ uri: item.image }} style={styles.storyImage} />
                 {index === 2 && (
                   <View style={styles.playCircle}><Icon name="play" size={18} color={COLORS.white} /></View>
