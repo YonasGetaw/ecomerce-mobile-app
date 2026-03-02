@@ -304,40 +304,46 @@ export default function ProfileScreen({ navigation }) {
         </View>
       </ScrollView>
 
-      <Modal visible={scannerVisible} animationType="slide" onRequestClose={() => setScannerVisible(false)}>
-        <SafeAreaView style={styles.scannerContainer}>
-          <View style={styles.scannerHeader}>
-            <TouchableOpacity onPress={() => setScannerVisible(false)}>
-              <Icon name="arrow-left" size={22} color={COLORS.white} />
-            </TouchableOpacity>
-            <Text style={styles.scannerTitle}>Scan QR Code</Text>
-            <View style={{ width: 22 }} />
-          </View>
-
-          {cameraPermission === false ? (
-            <View style={styles.permissionWrap}>
-              <Text style={styles.permissionText}>Camera permission is required to scan QR code.</Text>
-              <TouchableOpacity style={styles.permissionBtn} onPress={() => setScannerVisible(false)}>
-                <Text style={styles.permissionBtnText}>Close</Text>
+      {scannerVisible && (
+        <Modal visible={scannerVisible} animationType="slide" onRequestClose={() => setScannerVisible(false)}>
+          <SafeAreaView style={styles.scannerContainer}>
+            <View style={styles.scannerHeader}>
+              <TouchableOpacity onPress={() => setScannerVisible(false)}>
+                <Icon name="arrow-left" size={22} color={COLORS.white} />
               </TouchableOpacity>
+              <Text style={styles.scannerTitle}>Scan QR Code</Text>
+              <View style={{ width: 22 }} />
             </View>
-          ) : (
-            <Camera
-              style={styles.scannerCamera}
-              type={Camera.Constants.Type.back}
-              onBarCodeScanned={scanned ? undefined : handleScanResult}
-              barCodeScannerSettings={{
-                barCodeTypes: [Camera.Constants.BarCodeType.qr]
-              }}
-            >
-              <View style={styles.scanOverlay}>
-                <View style={styles.scanFrame} />
-                <Text style={styles.scanHint}>Point the camera at a QR code</Text>
+
+            {cameraPermission === false ? (
+              <View style={styles.permissionWrap}>
+                <Text style={styles.permissionText}>Camera permission is required to scan QR code.</Text>
+                <TouchableOpacity style={styles.permissionBtn} onPress={() => setScannerVisible(false)}>
+                  <Text style={styles.permissionBtnText}>Close</Text>
+                </TouchableOpacity>
               </View>
-            </Camera>
-          )}
-        </SafeAreaView>
-      </Modal>
+            ) : cameraPermission === null ? (
+              <View style={styles.permissionWrap}>
+                <Text style={styles.permissionText}>Requesting camera permission...</Text>
+              </View>
+            ) : (
+              <Camera
+                style={styles.scannerCamera}
+                type={Camera.Constants.Type.back}
+                onBarCodeScanned={scanned ? undefined : handleScanResult}
+                barCodeScannerSettings={{
+                  barCodeTypes: [Camera.Constants.BarCodeType.qr]
+                }}
+              >
+                <View style={styles.scanOverlay}>
+                  <View style={styles.scanFrame} />
+                  <Text style={styles.scanHint}>Point the camera at a QR code</Text>
+                </View>
+              </Camera>
+            )}
+          </SafeAreaView>
+        </Modal>
+      )}
     </SafeAreaView>
   );
 }
