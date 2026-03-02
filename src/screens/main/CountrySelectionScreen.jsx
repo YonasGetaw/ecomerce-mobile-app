@@ -155,7 +155,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: FONTS.regular,
     color: COLORS.text.primary,
-    paddingVertical: 0
+    paddingVertical: 8,
+    paddingHorizontal: 6
   },
   listContent: {
     paddingBottom: SIZES.large
