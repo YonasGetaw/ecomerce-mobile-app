@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
   },
   activityText: {
     color: COLORS.white,
-    fontSize: 11,
+    fontSize: 10,
     fontFamily: FONTS.medium
   },
   rightTopRow: {
@@ -445,8 +445,8 @@ const styles = StyleSheet.create({
   },
   greeting: {
     marginTop: SIZES.medium,
-    fontSize: 44,
-    lineHeight: 48,
+    fontSize: 34,
+    lineHeight: 38,
     color: COLORS.text.primary,
     fontFamily: FONTS.bold
   },
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   announcementTitle: {
-    fontSize: 15,
+    fontSize: 13,
     fontFamily: FONTS.bold,
     color: COLORS.text.primary,
     marginBottom: 2
@@ -490,8 +490,8 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.small
   },
   sectionTitle: {
-    fontSize: 34,
-    lineHeight: 36,
+    fontSize: 28,
+    lineHeight: 30,
     color: COLORS.text.primary,
     fontFamily: FONTS.bold
   },
@@ -501,7 +501,7 @@ const styles = StyleSheet.create({
   },
   seeAllText: {
     marginRight: 6,
-    fontSize: 14,
+    fontSize: 12,
     color: COLORS.text.primary,
     fontFamily: FONTS.medium
   },
@@ -530,7 +530,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   orderChipText: {
-    fontSize: 13,
+    fontSize: 12,
     color: COLORS.primary,
     fontFamily: FONTS.medium
   },
@@ -661,7 +661,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   categoryName: {
-    fontSize: 14,
+    fontSize: 12,
     color: COLORS.text.primary,
     fontFamily: FONTS.bold
   },
