@@ -182,11 +182,6 @@ export default function ProfileScreen({ navigation }) {
   const handleStoryShopPress = () => {
     closeStoryModal();
     setTimeout(() => {
-      const parentNav = navigation.getParent?.();
-      if (parentNav) {
-        parentNav.navigate('Home', { screen: 'ProductSearch' });
-        return;
-      }
       navigation.navigate('Home', { screen: 'ProductSearch' });
     }, 120);
   };
