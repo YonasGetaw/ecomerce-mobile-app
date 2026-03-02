@@ -5,6 +5,7 @@ import SettingsScreen from '../screens/main/SettingsScreen';
 import EditProfileScreen from '../screens/main/EditProfileScreen';
 import ShippingAddressScreen from '../screens/main/ShippingAddressScreen';
 import AboutSladaScreen from '../screens/main/AboutSladaScreen';
+import CountrySelectionScreen from '../screens/main/CountrySelectionScreen';
 import OrderSummaryScreen from '../screens/checkout/OrderSummaryScreen';
 import PaymentScreen from '../screens/checkout/PaymentScreen';
 import { COLORS } from '../utils/Colors';
@@ -24,6 +25,7 @@ export default function ProfileStackNavigator() {
       <Stack.Screen name="EditProfile" component={EditProfileScreen} />
       <Stack.Screen name="ShippingAddress" component={ShippingAddressScreen} />
       <Stack.Screen name="AboutSlada" component={AboutSladaScreen} />
+      <Stack.Screen name="CountrySelection" component={CountrySelectionScreen} />
       <Stack.Screen name="OrderSummary" component={OrderSummaryScreen} />
       <Stack.Screen name="Payment" component={PaymentScreen} />
     </Stack.Navigator>

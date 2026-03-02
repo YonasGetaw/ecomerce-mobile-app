@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, StatusBar, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import { useLocalization } from '../../Context/LocalizationContext';
+import StorageService, { StorageKeys } from '../../utils/Storage';
 
 function SettingRow({ title, value, onPress }) {
   return (
@@ -19,6 +20,26 @@ function SettingRow({ title, value, onPress }) {
 export default function SettingsScreen({ navigation }) {
   const { language, setLanguage, t } = useLocalization();
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
+  const [country, setCountry] = useState('India');
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadCountry = async () => {
+      const prefs = await StorageService.getItem(StorageKeys.USER_PREFERENCES);
+      if (mounted && prefs?.country) {
+        setCountry(prefs.country);
+      }
+    };
+
+    loadCountry();
+    const unsubscribe = navigation.addListener('focus', loadCountry);
+
+    return () => {
+      mounted = false;
+      unsubscribe();
+    };
+  }, [navigation]);
 
   const onPressLanguage = () => {
     setLanguageModalVisible(true);
@@ -47,7 +68,11 @@ export default function SettingsScreen({ navigation }) {
       <SettingRow title={t('paymentMethods', 'Payment methods')} onPress={() => {}} />
 
       <Text style={styles.sectionTitle}>{t('shop', 'Shop')}</Text>
-      <SettingRow title={t('country', 'Country')} value="Vietnam" onPress={() => {}} />
+      <SettingRow
+        title={t('country', 'Country')}
+        value={country}
+        onPress={() => navigation.navigate('CountrySelection', { selectedCountry: country })}
+      />
       <SettingRow title={t('currency', 'Currency')} value="$ USD" onPress={() => {}} />
       <SettingRow title={t('sizes', 'Sizes')} value="UK" onPress={() => {}} />
       <SettingRow title={t('terms', 'Terms and Conditions')} onPress={() => {}} />
