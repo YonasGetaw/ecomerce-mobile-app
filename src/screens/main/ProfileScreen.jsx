@@ -19,6 +19,7 @@ import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import { PRODUCTS, FLASH_SALE_ITEMS } from '../../data/MockData';
 import { useImagePicker } from '../../hooks/useImagePicker';
 import { useAuth } from '../../Context/AuthContext';
+import { useLocalization } from '../../Context/LocalizationContext';
 
 const PROFILE_IMAGE_BLUR = 30;
 const PROFILE_IMAGE_OVERLAY = 'rgba(0,0,0,0.102)';
@@ -42,6 +43,7 @@ function BlurredImage({ source, style }) {
 
 export default function ProfileScreen({ navigation }) {
   const { user } = useAuth();
+  const { t } = useLocalization();
   const { pickFromCamera, pickFromGallery } = useImagePicker();
 
   const [avatarUri, setAvatarUri] = useState(SAMPLE_PROFILE_IMAGES[0]);
@@ -54,9 +56,9 @@ export default function ProfileScreen({ navigation }) {
   const [storyStep, setStoryStep] = useState(0);
 
   const orderTabs = [
-    { key: 'pay', label: 'To Pay', image: SAMPLE_PROFILE_IMAGES[0] },
-    { key: 'receive', label: 'To Recieve', image: SAMPLE_PROFILE_IMAGES[1] },
-    { key: 'review', label: 'To Review', image: SAMPLE_PROFILE_IMAGES[2] }
+    { key: 'pay', label: t('toPay', 'To Pay'), image: SAMPLE_PROFILE_IMAGES[0] },
+    { key: 'receive', label: t('toReceive', 'To Receive'), image: SAMPLE_PROFILE_IMAGES[1] },
+    { key: 'review', label: t('toReview', 'To Review'), image: SAMPLE_PROFILE_IMAGES[2] }
   ];
 
   const recentViewed = [
@@ -250,7 +252,7 @@ export default function ProfileScreen({ navigation }) {
       <Text style={styles.sectionTitle}>{title}</Text>
       {onSeeAll ? (
         <TouchableOpacity style={styles.seeAllWrap} onPress={onSeeAll}>
-          <Text style={styles.seeAllText}>See All</Text>
+          <Text style={styles.seeAllText}>{t('seeAll', 'See All')}</Text>
           <View style={styles.arrowCircle}><Icon name="arrow-right" size={10} color={COLORS.white} /></View>
         </TouchableOpacity>
       ) : null}
@@ -281,18 +283,18 @@ export default function ProfileScreen({ navigation }) {
           </View>
         </View>
 
-        <Text style={styles.greeting}>Hello, {user?.name || 'Romina'}!</Text>
+        <Text style={styles.greeting}>{t('hello', 'Hello')}, {user?.name || 'Romina'}!</Text>
 
         <TouchableOpacity style={styles.announcementCard}>
           <View>
-            <Text style={styles.announcementTitle}>Announcement</Text>
+            <Text style={styles.announcementTitle}>{t('announcement', 'Announcement')}</Text>
             <Text style={styles.announcementSub}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas hendrerit luctus libero ac vulputate.</Text>
           </View>
           <View style={styles.arrowCircle}><Icon name="arrow-right" size={10} color={COLORS.white} /></View>
         </TouchableOpacity>
 
         <View style={styles.recentBlock}>
-          <Text style={styles.recentTitle}>Recently viewed</Text>
+          <Text style={styles.recentTitle}>{t('recentlyViewed', 'Recently viewed')}</Text>
           <View style={styles.recentRow}>
             {recentViewed.slice(0, 5).map((item, idx) => (
               <BlurredImage key={`recent-${idx}`} source={item} style={styles.recentAvatar} />
@@ -301,7 +303,7 @@ export default function ProfileScreen({ navigation }) {
         </View>
 
         <View style={styles.sectionBlock}>
-          <Text style={styles.sectionTitle}>My Orders</Text>
+          <Text style={styles.sectionTitle}>{t('myOrders', 'My Orders')}</Text>
           <View style={styles.ordersWrap}>
             <View style={styles.ordersRow}>
               {orderTabs.map((tab) => (
@@ -328,7 +330,7 @@ export default function ProfileScreen({ navigation }) {
         </View>
 
         <View style={styles.sectionBlock}>
-          <Text style={styles.sectionTitle}>Stories</Text>
+          <Text style={styles.sectionTitle}>{t('stories', 'Stories')}</Text>
           <FlatList
             horizontal
             data={stories}
@@ -355,9 +357,9 @@ export default function ProfileScreen({ navigation }) {
 
         <View style={styles.sectionBlock}>
           <View style={styles.newItemsHeader}>
-            <Text style={styles.newItemsTitle}>New Items</Text>
+            <Text style={styles.newItemsTitle}>{t('newItems', 'New Items')}</Text>
             <TouchableOpacity style={styles.newItemsSeeAllWrap} onPress={() => navigation.navigate('Home', { screen: 'ProductSearch' })}>
-              <Text style={styles.newItemsSeeAllText}>See All</Text>
+              <Text style={styles.newItemsSeeAllText}>{t('seeAll', 'See All')}</Text>
               <View style={styles.newItemsArrowCircle}><Icon name="arrow-right" size={12} color={COLORS.white} /></View>
             </TouchableOpacity>
           </View>
@@ -378,7 +380,7 @@ export default function ProfileScreen({ navigation }) {
         </View>
 
         <View style={styles.sectionBlock}>
-          {renderSectionHeader('Most Popular', () => navigation.navigate('Home', { screen: 'ProductSearch' }))}
+          {renderSectionHeader(t('mostPopular', 'Most Popular'), () => navigation.navigate('Home', { screen: 'ProductSearch' }))}
           <FlatList
             horizontal
             data={homeProducts.slice(0, 5)}
@@ -398,7 +400,7 @@ export default function ProfileScreen({ navigation }) {
         </View>
 
         <View style={styles.sectionBlock}>
-          {renderSectionHeader('Categories', () => navigation.navigate('Categories'))}
+          {renderSectionHeader(t('categories', 'Categories'), () => navigation.navigate('Categories'))}
           <View style={styles.categoriesGrid}>
             {categories.map((category) => (
               <TouchableOpacity key={category.id} style={styles.categoryCard} onPress={() => navigation.navigate('Categories')}>
@@ -418,7 +420,7 @@ export default function ProfileScreen({ navigation }) {
 
         <View style={styles.sectionBlock}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Flash Sale</Text>
+            <Text style={styles.sectionTitle}>{t('flashSale', 'Flash Sale')}</Text>
             <View style={styles.flashTimerRow}>
               <Icon name="clock" size={12} color={COLORS.primary} />
               <View style={styles.flashTimerChip}><Text style={styles.flashTimerChipText}>00</Text></View>
@@ -437,7 +439,7 @@ export default function ProfileScreen({ navigation }) {
         </View>
 
         <View style={styles.sectionBlock}>
-          <Text style={styles.sectionTitle}>Top Products</Text>
+          <Text style={styles.sectionTitle}>{t('topProducts', 'Top Products')}</Text>
           <View style={styles.topProductsRow}>
             {topProducts.slice(0, 5).map((item, idx) => (
               <BlurredImage key={`top-${idx}`} source={item} style={styles.topProductCircle} />
@@ -447,7 +449,7 @@ export default function ProfileScreen({ navigation }) {
 
         <View style={[styles.sectionBlock, styles.lastSection]}>
           <View style={styles.justHeaderRow}>
-            <Text style={styles.sectionTitle}>Just For You</Text>
+            <Text style={styles.sectionTitle}>{t('justForYou', 'Just For You')}</Text>
             <Icon name="star" size={12} color={COLORS.primary} />
           </View>
           <View style={styles.justGrid}>

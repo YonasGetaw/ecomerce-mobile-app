@@ -12,15 +12,17 @@ import {
 import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import { useAuth } from '../../Context/AuthContext';
+import { useLocalization } from '../../Context/LocalizationContext';
 
 const COUNTRIES = ['Vietnam', 'Ethiopia', 'United States', 'United Kingdom', 'Canada'];
 
 export default function ShippingAddressScreen({ navigation }) {
   const { user, updateUserProfile } = useAuth();
+  const { t } = useLocalization();
 
   const initialAddress = useMemo(() => user?.shippingAddress || {}, [user?.shippingAddress]);
 
-  const [country, setCountry] = useState(initialAddress.country || 'Choose your country');
+  const [country, setCountry] = useState(initialAddress.country || '');
   const [address, setAddress] = useState(initialAddress.address || '');
   const [town, setTown] = useState(initialAddress.town || '');
   const [postcode, setPostcode] = useState(initialAddress.postcode || '');
@@ -28,7 +30,7 @@ export default function ShippingAddressScreen({ navigation }) {
   const [saving, setSaving] = useState(false);
 
   const onPickCountry = () => {
-    Alert.alert('Select Country', 'Choose your country', [
+    Alert.alert(t('country', 'Country'), t('chooseCountry', 'Choose your country'), [
       ...COUNTRIES.map((item) => ({
         text: item,
         onPress: () => setCountry(item)
@@ -39,13 +41,13 @@ export default function ShippingAddressScreen({ navigation }) {
 
   const onSave = async () => {
     if (
-      country === 'Choose your country' ||
+      !country ||
       !address.trim() ||
       !town.trim() ||
       !postcode.trim() ||
       !phone.trim()
     ) {
-      Alert.alert('Required', 'Please fill all shipping address fields.');
+      Alert.alert(t('required', 'Required'), t('requiredMessage', 'Please fill all required fields.'));
       return;
     }
 
@@ -62,13 +64,13 @@ export default function ShippingAddressScreen({ navigation }) {
     setSaving(false);
 
     if (result?.success) {
-      Alert.alert('Success', 'Shipping address saved.', [
+      Alert.alert(t('success', 'Success'), t('shippingSaved', 'Shipping address saved.'), [
         { text: 'OK', onPress: () => navigation.goBack() }
       ]);
       return;
     }
 
-    Alert.alert('Error', result?.error || 'Could not save shipping address.');
+    Alert.alert(t('error', 'Error'), result?.error || 'Could not save shipping address.');
   };
 
   return (
@@ -81,49 +83,49 @@ export default function ShippingAddressScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.title}>Settings</Text>
-      <Text style={styles.subtitle}>Shipping Address</Text>
+      <Text style={styles.title}>{t('settings', 'Settings')}</Text>
+      <Text style={styles.subtitle}>{t('shippingAddressTitle', 'Shipping Address')}</Text>
 
-      <Text style={styles.fieldLabel}>Country</Text>
+      <Text style={styles.fieldLabel}>{t('country', 'Country')}</Text>
       <TouchableOpacity style={styles.countryRow} onPress={onPickCountry} activeOpacity={0.85}>
-        <Text style={styles.countryText}>{country}</Text>
+        <Text style={styles.countryText}>{country === 'Choose your country' ? t('chooseCountry', 'Choose your country') : country}</Text>
         <View style={styles.countryArrow}>
           <Icon name="arrow-right" size={12} color={COLORS.white} />
         </View>
       </TouchableOpacity>
 
-      <Text style={styles.fieldLabel}>Address</Text>
+      <Text style={styles.fieldLabel}>{t('address', 'Address')}</Text>
       <TextInput
         value={address}
         onChangeText={setAddress}
-        placeholder="Required"
+        placeholder={t('required', 'Required')}
         placeholderTextColor="#A7B9EA"
         style={styles.input}
       />
 
-      <Text style={styles.fieldLabel}>Town / City</Text>
+      <Text style={styles.fieldLabel}>{t('townCity', 'Town / City')}</Text>
       <TextInput
         value={town}
         onChangeText={setTown}
-        placeholder="Required"
+        placeholder={t('required', 'Required')}
         placeholderTextColor="#A7B9EA"
         style={styles.input}
       />
 
-      <Text style={styles.fieldLabel}>Postcode</Text>
+      <Text style={styles.fieldLabel}>{t('postcode', 'Postcode')}</Text>
       <TextInput
         value={postcode}
         onChangeText={setPostcode}
-        placeholder="Required"
+        placeholder={t('required', 'Required')}
         placeholderTextColor="#A7B9EA"
         style={styles.input}
       />
 
-      <Text style={styles.fieldLabel}>Phone Number</Text>
+      <Text style={styles.fieldLabel}>{t('phoneNumber', 'Phone Number')}</Text>
       <TextInput
         value={phone}
         onChangeText={setPhone}
-        placeholder="Required"
+        placeholder={t('required', 'Required')}
         placeholderTextColor="#A7B9EA"
         style={styles.input}
         keyboardType="phone-pad"
@@ -131,7 +133,7 @@ export default function ShippingAddressScreen({ navigation }) {
 
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.saveButton} onPress={onSave} disabled={saving}>
-          <Text style={styles.saveText}>{saving ? 'Saving...' : 'Save Changes'}</Text>
+          <Text style={styles.saveText}>{saving ? 'Saving...' : t('saveChanges', 'Save Changes')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

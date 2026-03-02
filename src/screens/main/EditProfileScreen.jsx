@@ -14,11 +14,13 @@ import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
 import { useImagePicker } from '../../hooks/useImagePicker';
 import { useAuth } from '../../Context/AuthContext';
+import { useLocalization } from '../../Context/LocalizationContext';
 
 const FALLBACK_AVATAR = require('../../../assets/images/sample/profile-1.jpg');
 
 export default function EditProfileScreen({ navigation }) {
   const { user, updateUserProfile } = useAuth();
+  const { t } = useLocalization();
   const { pickFromCamera, pickFromGallery } = useImagePicker();
 
   const initialName = useMemo(() => user?.name || 'Romina', [user?.name]);
@@ -50,7 +52,7 @@ export default function EditProfileScreen({ navigation }) {
 
   const onSave = async () => {
     if (!name.trim() || !email.trim() || !password.trim()) {
-      Alert.alert('Required', 'Please fill name, email and password.');
+      Alert.alert(t('required', 'Required'), t('requiredMessage', 'Please fill all required fields.'));
       return;
     }
 
@@ -64,13 +66,13 @@ export default function EditProfileScreen({ navigation }) {
     setSaving(false);
 
     if (result?.success) {
-      Alert.alert('Success', 'Profile updated successfully.', [
+      Alert.alert(t('success', 'Success'), t('profileSaved', 'Profile updated successfully.'), [
         { text: 'OK', onPress: () => navigation.goBack() }
       ]);
       return;
     }
 
-    Alert.alert('Error', result?.error || 'Could not save profile.');
+    Alert.alert(t('error', 'Error'), result?.error || 'Could not save profile.');
   };
 
   return (
@@ -83,8 +85,8 @@ export default function EditProfileScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.title}>Settings</Text>
-      <Text style={styles.subtitle}>Your Profile</Text>
+      <Text style={styles.title}>{t('settings', 'Settings')}</Text>
+      <Text style={styles.subtitle}>{t('yourProfile', 'Your Profile')}</Text>
 
       <View style={styles.avatarFrame}>
         <Image source={avatarSource} style={styles.avatar} />
@@ -97,14 +99,14 @@ export default function EditProfileScreen({ navigation }) {
         value={name}
         onChangeText={setName}
         style={styles.input}
-        placeholder="Name"
+        placeholder={t('name', 'Name')}
         placeholderTextColor="#8E8E93"
       />
       <TextInput
         value={email}
         onChangeText={setEmail}
         style={styles.input}
-        placeholder="Email"
+        placeholder={t('email', 'Email')}
         keyboardType="email-address"
         autoCapitalize="none"
         placeholderTextColor="#8E8E93"
@@ -113,14 +115,14 @@ export default function EditProfileScreen({ navigation }) {
         value={password}
         onChangeText={setPassword}
         style={styles.input}
-        placeholder="Password"
+        placeholder={t('password', 'Password')}
         secureTextEntry
         placeholderTextColor="#8E8E93"
       />
 
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.saveButton} onPress={onSave} disabled={saving}>
-          <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save Changes'}</Text>
+          <Text style={styles.saveButtonText}>{saving ? 'Saving...' : t('saveChanges', 'Save Changes')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

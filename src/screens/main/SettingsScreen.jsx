@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS, SIZES } from '../../utils/Colors';
+import { useLocalization } from '../../Context/LocalizationContext';
 
 function SettingRow({ title, value, onPress }) {
   return (
@@ -16,6 +17,16 @@ function SettingRow({ title, value, onPress }) {
 }
 
 export default function SettingsScreen({ navigation }) {
+  const { language, setLanguage, t } = useLocalization();
+
+  const onPressLanguage = () => {
+    Alert.alert(t('chooseLanguage', 'Choose Language'), '', [
+      { text: t('english', 'English'), onPress: () => setLanguage('en') },
+      { text: t('amharic', 'Amharic'), onPress: () => setLanguage('am') },
+      { text: 'Cancel', style: 'cancel' }
+    ]);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
@@ -26,25 +37,29 @@ export default function SettingsScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.screenTitle}>Settings</Text>
+      <Text style={styles.screenTitle}>{t('settings', 'Settings')}</Text>
 
-      <Text style={styles.sectionTitle}>Personal</Text>
-      <SettingRow title="Profile" onPress={() => navigation.navigate('EditProfile')} />
-      <SettingRow title="Shipping Address" onPress={() => navigation.navigate('ShippingAddress')} />
-      <SettingRow title="Payment methods" onPress={() => {}} />
+      <Text style={styles.sectionTitle}>{t('personal', 'Personal')}</Text>
+      <SettingRow title={t('profile', 'Profile')} onPress={() => navigation.navigate('EditProfile')} />
+      <SettingRow title={t('shippingAddress', 'Shipping Address')} onPress={() => navigation.navigate('ShippingAddress')} />
+      <SettingRow title={t('paymentMethods', 'Payment methods')} onPress={() => {}} />
 
-      <Text style={styles.sectionTitle}>Shop</Text>
-      <SettingRow title="Country" value="Vietnam" onPress={() => {}} />
-      <SettingRow title="Currency" value="$ USD" onPress={() => {}} />
-      <SettingRow title="Sizes" value="UK" onPress={() => {}} />
-      <SettingRow title="Terms and Conditions" onPress={() => {}} />
+      <Text style={styles.sectionTitle}>{t('shop', 'Shop')}</Text>
+      <SettingRow title={t('country', 'Country')} value="Vietnam" onPress={() => {}} />
+      <SettingRow title={t('currency', 'Currency')} value="$ USD" onPress={() => {}} />
+      <SettingRow title={t('sizes', 'Sizes')} value="UK" onPress={() => {}} />
+      <SettingRow title={t('terms', 'Terms and Conditions')} onPress={() => {}} />
 
-      <Text style={styles.sectionTitle}>Account</Text>
-      <SettingRow title="Language" value="English" onPress={() => {}} />
-      <SettingRow title="About Slada" onPress={() => {}} />
+      <Text style={styles.sectionTitle}>{t('account', 'Account')}</Text>
+      <SettingRow
+        title={t('language', 'Language')}
+        value={language === 'am' ? t('amharic', 'Amharic') : t('english', 'English')}
+        onPress={onPressLanguage}
+      />
+      <SettingRow title={t('aboutSlada', 'About Slada')} onPress={() => {}} />
 
       <TouchableOpacity style={styles.deleteWrap}>
-        <Text style={styles.deleteText}>Delete My Account</Text>
+        <Text style={styles.deleteText}>{t('deleteAccount', 'Delete My Account')}</Text>
       </TouchableOpacity>
 
       <View style={styles.footer}>
